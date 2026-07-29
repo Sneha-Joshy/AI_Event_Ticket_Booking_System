@@ -1,0 +1,288 @@
+{% extends 'booking/base.html' %}
+{% block title %}About{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <!-- Heading -->
+    <div class="text-center mb-5">
+
+        <h1 class="display-4 fw-bold">
+            About AI Event Ticket Booking System
+        </h1>
+
+        <p class="lead text-muted">
+            Smart • Secure • Fast • AI Powered Event Booking Platform
+        </p>
+
+    </div>
+
+    <!-- About -->
+    <div class="row align-items-center mb-5">
+
+        <div class="col-lg-6">
+
+            <img src="https://picsum.photos/600/400"
+                 class="img-fluid rounded shadow">
+
+        </div>
+
+        <div class="col-lg-6">
+
+            <h2>Who We Are</h2>
+
+            <p class="text-muted">
+
+The AI Event Ticket Booking System is a modern web application developed to simplify the process of discovering, booking, and managing event tickets online. Users can browse various events, view complete event details, book tickets securely, make online payments, and receive digital tickets with QR code verification.
+
+            </p>
+
+            <p class="text-muted">
+
+The system also includes intelligent event recommendations, advanced event search, and a responsive interface that provides a smooth experience across desktops, tablets, and mobile devices.
+
+            </p>
+
+        </div>
+
+    </div>
+
+    <!-- Features -->
+
+    <h2 class="text-center mb-4">
+        Why Choose Our Platform?
+    </h2>
+
+    <div class="row text-center">
+
+        <div class="col-md-3 mb-4">
+
+            <div class="card shadow h-100 p-3">
+
+                <h1>🤖</h1>
+
+                <h4>AI Recommendations</h4>
+
+                <p>
+                    Discover events based on your interests and preferences.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3 mb-4">
+
+            <div class="card shadow h-100 p-3">
+
+                <h1>🎟</h1>
+
+                <h4>QR Tickets</h4>
+
+                <p>
+                    Secure digital tickets with QR code verification.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3 mb-4">
+
+            <div class="card shadow h-100 p-3">
+
+                <h1>💳</h1>
+
+                <h4>Secure Payment</h4>
+
+                <p>
+                    Safe and reliable online payment gateway.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3 mb-4">
+
+            <div class="card shadow h-100 p-3">
+
+                <h1>📧</h1>
+
+                <h4>Email Alerts</h4>
+
+                <p>
+                    Instant booking confirmation and event notifications.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Mission -->
+
+    <div class="row mt-5">
+
+        <div class="col-md-6">
+
+            <div class="card shadow p-4">
+
+                <h3>🎯 Our Mission</h3>
+
+                <p>
+
+To provide a secure, intelligent, and user-friendly event booking platform that helps users easily discover and reserve tickets for their favorite events.
+
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-6">
+
+            <div class="card shadow p-4">
+
+                <h3>🚀 Our Vision</h3>
+
+                <p>
+
+To become a trusted digital event booking platform by combining Artificial Intelligence, automation, and modern web technologies.
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Technology -->
+
+    <!-- How It Works -->
+
+<div class="mt-5">
+
+    <h2 class="text-center mb-5">
+        How It Works
+    </h2>
+
+    <div class="row text-center">
+
+        <div class="col-md-3">
+
+            <div class="card shadow p-4 h-100">
+
+                <h1>🔍</h1>
+
+                <h4>Browse Events</h4>
+
+                <p>
+                    Explore concerts, workshops, seminars, festivals and many more exciting events.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="card shadow p-4 h-100">
+
+                <h1>🎟️</h1>
+
+                <h4>Book Tickets</h4>
+
+                <p>
+                    Select your preferred event, choose the number of tickets and confirm your booking.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="card shadow p-4 h-100">
+
+                <h1>💳</h1>
+
+                <h4>Make Payment</h4>
+
+                <p>
+                    Complete the payment securely through the integrated payment page.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="card shadow p-4 h-100">
+
+                <h1>📱</h1>
+
+                <h4>Receive QR Ticket</h4>
+
+                <p>
+                    Get your digital ticket with a QR code for quick and secure event entry.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+    <!-- Booking Process -->
+
+    <div class="text-center mt-5">
+
+        <h2>Booking Process</h2>
+
+        <br>
+
+        <h4>
+
+🔍 Search Events
+
+➡️
+
+🎟 Book Tickets
+
+➡️
+
+💳 Payment
+
+➡️
+
+📱 Receive QR Ticket
+
+        </h4>
+
+    </div>
+
+    <!-- CTA -->
+
+    <div class="text-center mt-5">
+
+        <h2>Ready to Book Your Next Event?</h2>
+
+        <br>
+
+        <a href="{% url 'events' %}" class="btn btn-primary btn-lg">
+
+            Explore Events
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends 'booking/base.html' %}
+
+{% block title %}
+Book Ticket
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-8">
+
+            <div class="card shadow p-4">
+
+                <h2 class="text-center mb-4">
+                    🎫 Book Your Ticket
+                </h2>
+
+                <form>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Event Name
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            value="Music Concert"
+                            readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Ticket Price
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            value="₹499"
+                            readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Number of Tickets
+                        </label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            min="1"
+                            max="10"
+                            value="1">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Total Amount
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            value="₹499"
+                            readonly>
+                    </div>
+
+                    <div class="text-center">
+
+                        <a href="{% url 'event_details' %}" class="btn btn-secondary">
+    ← Back
+</a>
+
+                        <a href="{% url 'payment' %}" class="btn btn-warning btn-lg">
+                            Proceed to Payment
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

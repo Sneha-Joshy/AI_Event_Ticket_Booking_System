@@ -1,0 +1,151 @@
+{% extends 'booking/base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="text-center mb-5">
+        <h1 class="fw-bold">Admin Dashboard</h1>
+        <p class="text-muted">
+            Welcome to the AI Event Ticket Booking System Admin Panel.
+        </p>
+    </div>
+
+    <!-- Statistics -->
+    <div class="row g-4 mb-5">
+
+        <div class="col-md-3">
+            <div class="card text-center shadow border-0">
+                <div class="card-body">
+                    <h1>🎉</h1>
+                    <h5>Total Events</h5>
+                    <h2 class="fw-bold">25</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-center shadow border-0">
+                <div class="card-body">
+                    <h1>🎟</h1>
+                    <h5>Total Bookings</h5>
+                    <h2 class="fw-bold">180</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-center shadow border-0">
+                <div class="card-body">
+                    <h1>👥</h1>
+                    <h5>Total Users</h5>
+                    <h2 class="fw-bold">95</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-center shadow border-0">
+                <div class="card-body">
+                    <h1>💰</h1>
+                    <h5>Total Revenue</h5>
+                    <h2 class="fw-bold">₹75,000</h2>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card shadow border-0 mb-5">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Quick Actions</h4>
+        </div>
+
+        <div class="card-body">
+
+            <a href="#" class="btn btn-success m-2">
+                ➕ Add Event
+            </a>
+
+            <a href="#" class="btn btn-warning m-2">
+                ✏ Manage Events
+            </a>
+
+            <a href="#" class="btn btn-info text-white m-2">
+                👥 Manage Users
+            </a>
+
+            <a href="#" class="btn btn-secondary m-2">
+                📊 View Reports
+            </a>
+
+        </div>
+    </div>
+
+    <!-- Recent Bookings -->
+    <div class="card shadow border-0">
+
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0">Recent Bookings</h4>
+        </div>
+
+        <div class="card-body table-responsive">
+
+            <table class="table table-bordered table-hover">
+
+                <thead class="table-light">
+
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>User</th>
+                        <th>Event</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <td>#1001</td>
+                        <td>John</td>
+                        <td>Music Concert</td>
+                        <td>15 Aug 2026</td>
+                        <td>₹1000</td>
+                        <td><span class="badge bg-success">Confirmed</span></td>
+                    </tr>
+
+                    <tr>
+                        <td>#1002</td>
+                        <td>Emma</td>
+                        <td>Tech Workshop</td>
+                        <td>18 Aug 2026</td>
+                        <td>₹500</td>
+                        <td><span class="badge bg-warning text-dark">Pending</span></td>
+                    </tr>
+
+                    <tr>
+                        <td>#1003</td>
+                        <td>Alex</td>
+                        <td>Food Festival</td>
+                        <td>20 Aug 2026</td>
+                        <td>₹750</td>
+                        <td><span class="badge bg-success">Confirmed</span></td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

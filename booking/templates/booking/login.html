@@ -1,0 +1,191 @@
+{% extends 'booking/base.html' %}
+
+
+{% block title %}
+Login
+{% endblock %}
+
+
+
+{% block content %}
+
+
+<section class="login-section">
+
+
+<div class="login-box">
+
+
+<h2>🎟️ Welcome Back</h2>
+
+<p>
+Login to book your favourite events
+</p>
+
+
+{% if error %}
+
+<p style="color:red;">
+{{error}}
+</p>
+
+{% endif %}
+
+
+
+<form method="POST">
+
+{% csrf_token %}
+
+
+<div class="mb-3">
+
+<label>
+Username
+</label>
+
+<input 
+type="text"
+name="username"
+class="form-control"
+placeholder="Enter username"
+required>
+
+</div>
+
+
+
+
+<div class="mb-3">
+
+<label>
+Password
+</label>
+
+
+<input
+type="password"
+name="password"
+class="form-control"
+placeholder="Enter password"
+required>
+
+
+</div>
+
+
+
+<button 
+type="submit"
+class="btn btn-warning w-100">
+
+Login
+
+</button>
+
+
+
+</form>
+
+
+
+<p class="mt-3 text-center">
+
+Don't have an account?
+
+<a href="{% url 'register' %}">
+Register
+</a>
+
+</p>
+
+
+</div>
+
+
+</section>
+
+
+
+
+<style>
+
+
+.login-section{
+
+min-height:80vh;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+background:#f5f5f5;
+
+}
+
+
+
+.login-box{
+
+width:400px;
+
+background:white;
+
+padding:35px;
+
+border-radius:15px;
+
+box-shadow:0px 10px 25px rgba(0,0,0,0.2);
+
+}
+
+
+
+.login-box h2{
+
+text-align:center;
+
+font-weight:bold;
+
+}
+
+
+
+.login-box p{
+
+text-align:center;
+
+color:#777;
+
+}
+
+
+
+.form-control{
+
+padding:12px;
+
+border-radius:10px;
+
+}
+
+
+
+.btn-warning{
+
+padding:12px;
+
+font-weight:bold;
+
+border-radius:10px;
+
+}
+
+
+</style>
+
+
+
+{% endblock %}

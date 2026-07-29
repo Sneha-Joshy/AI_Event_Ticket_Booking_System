@@ -1,0 +1,134 @@
+{% extends 'booking/base.html' %}
+
+{% block title %}My Bookings{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <!-- Heading -->
+    <div class="text-center mb-5">
+        <h1 class="fw-bold">My Bookings</h1>
+        <p class="text-muted">
+            View and manage all your booked events.
+        </p>
+    </div>
+
+    <!-- Search -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-6">
+            <input type="text"
+                   class="form-control"
+                   placeholder="Search your bookings...">
+        </div>
+    </div>
+
+    <!-- Booking Card 1 -->
+    <div class="card shadow mb-4">
+        <div class="row g-0">
+
+            <div class="col-md-4">
+                <img src="https://picsum.photos/500/300?1"
+                     class="img-fluid rounded-start h-100"
+                     style="object-fit:cover;">
+            </div>
+
+            <div class="col-md-8">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <h3 class="card-title">
+                            Music Concert
+                        </h3>
+
+                        <span class="badge bg-success fs-6">
+                            Confirmed
+                        </span>
+
+                    </div>
+
+                    <hr>
+
+                    <p><strong>Date:</strong> 15 August 2026</p>
+                    <p><strong>Venue:</strong> Kochi</p>
+                    <p><strong>Tickets:</strong> 2</p>
+                    <p><strong>Total Amount:</strong> ₹1000</p>
+
+                    <div class="mt-4">
+
+                        <a href="#" class="btn btn-primary">
+                            View Ticket
+                        </a>
+
+                        <a href="#" class="btn btn-outline-danger">
+                            Cancel Booking
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Booking Card 2 -->
+    <div class="card shadow">
+
+        <div class="row g-0">
+
+            <div class="col-md-4">
+                <img src="https://picsum.photos/500/300?2"
+                     class="img-fluid rounded-start h-100"
+                     style="object-fit:cover;">
+            </div>
+
+            <div class="col-md-8">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <h3 class="card-title">
+                            Tech Workshop
+                        </h3>
+
+                        <span class="badge bg-warning text-dark fs-6">
+                            Pending
+                        </span>
+
+                    </div>
+
+                    <hr>
+
+                    <p><strong>Date:</strong> 20 August 2026</p>
+                    <p><strong>Venue:</strong> Ernakulam</p>
+                    <p><strong>Tickets:</strong> 1</p>
+                    <p><strong>Total Amount:</strong> ₹500</p>
+
+                    <div class="mt-4">
+
+                        <a href="#" class="btn btn-primary">
+                            View Ticket
+                        </a>
+
+                        <a href="#" class="btn btn-outline-danger">
+                            Cancel Booking
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

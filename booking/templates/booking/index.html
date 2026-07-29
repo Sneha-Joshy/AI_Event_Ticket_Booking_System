@@ -1,0 +1,413 @@
+{% extends 'booking/base.html' %}
+
+{% block title %}
+Home
+{% endblock %}
+
+
+{% block content %}
+
+<!-- Hero Section -->
+
+<section class="hero">
+
+<div class="container">
+
+<h1 class="display-3 fw-bold">
+🎟️ AI Event Ticket Booking System
+</h1>
+
+<p class="lead mt-3">
+Discover, book and enjoy amazing events with the power of Artificial Intelligence.
+</p>
+
+<p>
+Our AI assistant helps you find events based on your interests, location and preferences.
+</p>
+
+<a href="{% url 'events' %}" class="btn btn-warning btn-lg mt-3">
+Explore Events
+</a>
+
+<a href="{% url 'login' %}" class="btn btn-light btn-lg mt-3">
+Login
+</a>
+
+</div>
+
+</section>
+
+
+
+<!-- About Section -->
+
+<div class="container mt-5">
+
+<div class="row align-items-center">
+
+<div class="col-md-6">
+
+<h2>
+About Our Platform
+</h2>
+
+<p>
+AI Event Ticket Booking System is a smart online platform that allows users
+to search, explore and book tickets for different events easily.
+</p>
+
+<p>
+Using Artificial Intelligence, the system provides personalized event
+recommendations and improves the overall booking experience.
+</p>
+
+
+</div>
+
+
+<div class="col-md-6">
+
+<div class="card shadow p-4">
+
+<h4>🤖 AI Powered Features</h4>
+
+<ul>
+
+<li>Smart Event Recommendations</li>
+
+<li>AI Chatbot Assistance</li>
+
+<li>Personalized Suggestions</li>
+
+<li>Digital QR Code Tickets</li>
+
+<li>Email Booking Confirmation</li>
+
+</ul>
+
+</div>
+
+
+</div>
+
+</div>
+
+</div>
+
+
+
+
+<!-- Featured Events -->
+
+
+<div class="container mt-5">
+
+
+<h2 class="text-center mb-4">
+🔥 Popular Events
+</h2>
+
+
+<div class="row">
+
+
+<div class="col-md-4">
+
+<div class="card shadow">
+
+<div class="card-body text-center">
+
+
+<h3>🎵 Music Concert</h3>
+
+<p>
+Experience live performances from popular artists with thousands of fans.
+</p>
+
+<button class="btn btn-primary">
+Book Now
+</button>
+
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<div class="col-md-4">
+
+<div class="card shadow">
+
+<div class="card-body text-center">
+
+
+<h3>💻 Tech Conference</h3>
+
+<p>
+Connect with developers, innovators and AI professionals.
+</p>
+
+<button class="btn btn-primary">
+Book Now
+</button>
+
+
+</div>
+
+</div>
+
+</div>
+
+
+
+
+<div class="col-md-4">
+
+<div class="card shadow">
+
+<div class="card-body text-center">
+
+
+<h3>🍔 Food Festival</h3>
+
+<p>
+Explore international cuisines and exciting food experiences.
+</p>
+
+<button class="btn btn-primary">
+Book Now
+</button>
+
+
+</div>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<!-- Categories -->
+
+
+<div class="container mt-5">
+
+
+<h2 class="text-center">
+Event Categories
+</h2>
+
+
+<div class="row text-center mt-4">
+
+
+<div class="col-md-3">
+
+<div class="card p-3 shadow">
+
+<h4>🎶 Music</h4>
+
+<p>Concerts and festivals</p>
+
+</div>
+
+</div>
+
+
+
+<div class="col-md-3">
+
+<div class="card p-3 shadow">
+
+<h4>🏏 Sports</h4>
+
+<p>Matches and tournaments</p>
+
+</div>
+
+</div>
+
+
+
+
+<div class="col-md-3">
+
+<div class="card p-3 shadow">
+
+<h4>🎓 Education</h4>
+
+<p>Workshops and seminars</p>
+
+</div>
+
+</div>
+
+
+
+
+<div class="col-md-3">
+
+<div class="card p-3 shadow">
+
+<h4>🎭 Entertainment</h4>
+
+<p>Shows and programs</p>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<!-- How it works -->
+
+
+<div class="container mt-5">
+
+
+<h2 class="text-center">
+How It Works
+</h2>
+
+
+<div class="row mt-4 text-center">
+
+
+<div class="col-md-4">
+
+<h3>1️⃣ Search</h3>
+
+<p>
+Find your favourite events easily.
+</p>
+
+</div>
+
+
+<div class="col-md-4">
+
+<h3>2️⃣ AI Suggestion</h3>
+
+<p>
+Get smart recommendations based on your interests.
+</p>
+
+</div>
+
+
+<div class="col-md-4">
+
+<h3>3️⃣ Book Ticket</h3>
+
+<p>
+Make secure payments and receive digital tickets.
+</p>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+
+
+<!-- Statistics -->
+
+
+<div class="container mt-5">
+
+<div class="row text-center">
+
+
+<div class="col-md-3">
+
+<h2>500+</h2>
+
+<p>Events</p>
+
+</div>
+
+
+<div class="col-md-3">
+
+<h2>10K+</h2>
+
+<p>Users</p>
+
+</div>
+
+
+<div class="col-md-3">
+
+<h2>50+</h2>
+
+<p>Organizers</p>
+
+</div>
+
+
+<div class="col-md-3">
+
+<h2>24/7</h2>
+
+<p>AI Support</p>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+
+<!-- Final Section -->
+
+
+<section class="bg-primary text-white mt-5 p-5 text-center">
+
+
+<h2>
+Ready to Explore Amazing Events?
+</h2>
+
+
+<p>
+Join our AI-powered event booking platform today.
+</p>
+
+
+<button class="btn btn-warning btn-lg">
+Get Started
+</button>
+
+
+</section>
+
+
+
+{% endblock %}
