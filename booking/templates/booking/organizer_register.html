@@ -1,0 +1,125 @@
+{% extends 'booking/base.html' %}
+
+{% block title %}
+Organizer Registration
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5" style="max-width:600px;">
+
+    <div class="card shadow p-4">
+
+        <h2 class="text-center mb-4">
+            🎤 Organizer Registration
+        </h2>
+
+        {% if error %}
+        <div class="alert alert-danger">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label>Organization Name</label>
+                <input type="text" name="organization_name" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label>Username</label>
+                <input type="text" name="username" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label>Email</label>
+                <input type="email" name="email" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label>Phone Number</label>
+
+    <input
+        type="tel"
+        name="phone"
+        class="form-control"
+        pattern="[6-9][0-9]{9}"
+        maxlength="10"
+        minlength="10"
+        placeholder="Enter 10-digit mobile number"
+        title="Enter a valid 10-digit mobile number starting with 6, 7, 8, or 9"
+        required>
+</div>
+            
+
+            <div class="mb-3">
+                <label>Address</label>
+                <textarea name="address" class="form-control" rows="3" required></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label>Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    class="form-control"
+                    required>
+            </div>
+
+            <div class="mb-3">
+                <label>Confirm Password</label>
+                <input
+                    type="password"
+                    id="confirm_password"
+                    name="confirm_password"
+                    class="form-control"
+                    required>
+            </div>
+
+            <div class="form-check mb-3">
+                <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="showPassword"
+                    onclick="togglePassword()">
+
+                <label class="form-check-label" for="showPassword">
+                    Show Password
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+                Register Organizer
+            </button>
+
+            <p class="text-center mt-3">
+                Already have an organizer account?
+                <a href="{% url 'organizer_login' %}">Login</a>
+            </p>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+function togglePassword() {
+
+    const password = document.getElementById("password");
+    const confirm = document.getElementById("confirm_password");
+
+    if (password.type === "password") {
+        password.type = "text";
+        confirm.type = "text";
+    } else {
+        password.type = "password";
+        confirm.type = "password";
+    }
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,141 @@
+{% extends 'booking/base.html' %}
+
+{% block title %}
+Admin Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h2 class="text-center mb-4">
+        🔐 Admin Dashboard
+    </h2>
+
+    <p class="text-center text-muted">
+        Welcome, {{ request.user.username }}
+    </p>
+
+    <div class="row mt-4">
+
+        <!-- Total Events -->
+        <div class="col-md-4 mb-4">
+
+            <div class="card shadow text-center p-4">
+
+                <h5>📅 Total Events</h5>
+
+                <h2>
+                    {{ total_events }}
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <!-- Pending Events -->
+        <div class="col-md-4 mb-4">
+
+            <div class="card shadow text-center p-4">
+
+                <h5>⏳ Pending Events</h5>
+
+                <h2>
+                    {{ pending_events }}
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <!-- Approved Events -->
+        <div class="col-md-4 mb-4">
+
+            <div class="card shadow text-center p-4">
+
+                <h5>✅ Approved Events</h5>
+
+                <h2>
+                    {{ approved_events }}
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <!-- Rejected Events -->
+        <div class="col-md-4 mb-4">
+
+            <div class="card shadow text-center p-4">
+
+                <h5>❌ Rejected Events</h5>
+
+                <h2>
+                    {{ rejected_events }}
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <!-- Organizers -->
+        <div class="col-md-4 mb-4">
+
+            <div class="card shadow text-center p-4">
+
+                <h5>🎤 Organizers</h5>
+
+                <h2>
+                    {{ total_organizers }}
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <!-- Bookings -->
+        <div class="col-md-4 mb-4">
+
+            <div class="card shadow text-center p-4">
+
+                <h5>🎫 Total Bookings</h5>
+
+                <h2>
+                    {{ total_bookings }}
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <a
+    href="{% url 'pending_events' %}"
+    class="btn btn-warning">
+
+    ⏳ Review Pending Events
+
+</a>
+
+
+    <div class="text-center mt-4">
+
+        <a
+            href="/admin/"
+            class="btn btn-dark">
+
+            ⚙ Django Admin
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

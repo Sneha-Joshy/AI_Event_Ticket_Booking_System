@@ -18,8 +18,10 @@ Book Ticket
                     🎫 Book Your Ticket
                 </h2>
 
-                <form>
+                <form method="POST">
+                    {% csrf_token %}
 
+                    <!-- Event Name -->
                     <div class="mb-3">
                         <label class="form-label">
                             Event Name
@@ -28,10 +30,11 @@ Book Ticket
                         <input
                             type="text"
                             class="form-control"
-                            value="Music Concert"
+                            value="{{ event.event_name }}"
                             readonly>
                     </div>
 
+                    <!-- Ticket Price -->
                     <div class="mb-3">
                         <label class="form-label">
                             Ticket Price
@@ -40,10 +43,11 @@ Book Ticket
                         <input
                             type="text"
                             class="form-control"
-                            value="₹499"
+                            value="₹{{ event.ticket_price }}"
                             readonly>
                     </div>
 
+                    <!-- Number of Tickets -->
                     <div class="mb-3">
                         <label class="form-label">
                             Number of Tickets
@@ -51,12 +55,15 @@ Book Ticket
 
                         <input
                             type="number"
+                            name="tickets"
                             class="form-control"
                             min="1"
-                            max="10"
-                            value="1">
+                            max="{{ event.available_seats }}"
+                            value="1"
+                            required>
                     </div>
 
+                    <!-- Total Amount -->
                     <div class="mb-3">
                         <label class="form-label">
                             Total Amount
@@ -65,19 +72,48 @@ Book Ticket
                         <input
                             type="text"
                             class="form-control"
-                            value="₹499"
+                            value="₹{{ event.ticket_price }}"
                             readonly>
                     </div>
 
+                    <!-- Customer Name -->
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Customer Name
+                        </label>
+
+                        <input
+                            type="text"
+                            name="customer_name"
+                            class="form-control"
+                            placeholder="Enter your name"
+                            required>
+                    </div>
+
+                    <!-- Customer Email -->
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Customer Email
+                        </label>
+
+                        <input
+                            type="email"
+                            name="customer_email"
+                            class="form-control"
+                            placeholder="Enter your email"
+                            required>
+                    </div>
+
+                    <!-- Buttons -->
                     <div class="text-center">
 
-                        <a href="{% url 'event_details' %}" class="btn btn-secondary">
-    ← Back
-</a>
-
-                        <a href="{% url 'payment' %}" class="btn btn-warning btn-lg">
-                            Proceed to Payment
+                        <a href="{% url 'event_details' event.id %}" class="btn btn-secondary">
+                            ← Back
                         </a>
+
+                        <button type="submit" class="btn btn-warning btn-lg">
+                            Proceed to Payment
+                        </button>
 
                     </div>
 

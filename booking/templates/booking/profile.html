@@ -1,94 +1,163 @@
 {% extends 'booking/base.html' %}
 
-{% block title %}My Profile{% endblock %}
+{% block title %}
+My Profile
+{% endblock %}
 
 {% block content %}
 
-<div class="container py-5">
+<div class="profile-page">
 
-    <div class="text-center mb-5">
-        <h1 class="fw-bold">My Profile</h1>
-        <p class="text-muted">
-            Manage your account information and bookings.
-        </p>
-    </div>
+    <div class="container py-5">
 
-    <div class="row justify-content-center">
+        <div class="profile-card">
 
-        <div class="col-lg-8">
+            <!-- Profile Header -->
+            <div class="profile-header">
 
-            <div class="card shadow border-0">
+                <div class="profile-avatar">
+                    {{ customer.username|first|upper }}
+                </div>
 
-                <div class="card-body p-5">
+                <h2>
+                    {{ customer.first_name|default:customer.username }}
+                </h2>
 
-                    <div class="text-center">
+                <p>
+                    Customer Account
+                </p>
 
-                        <img src="https://i.pravatar.cc/180"
-                             class="rounded-circle border shadow mb-3"
-                             width="150"
-                             height="150"
-                             alt="Profile">
+            </div>
 
-                        <h3>John Doe</h3>
-                        <p class="text-muted">
-                            Event Enthusiast
+
+            <!-- Profile Information -->
+            <div class="profile-body">
+
+                <h4 class="section-title">
+                    👤 Personal Information
+                </h4>
+
+
+                <div class="info-grid">
+
+                    <div class="info-item">
+
+                        <span class="info-icon">
+                            👤
+                        </span>
+
+                        <div>
+                            <small>Username</small>
+                            <strong>{{ customer.username }}</strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span class="info-icon">
+                            📧
+                        </span>
+
+                        <div>
+                            <small>Email</small>
+                            <strong>{{ customer.email }}</strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span class="info-icon">
+                            🧑
+                        </span>
+
+                        <div>
+                            <small>First Name</small>
+                            <strong>
+                                {{ customer.first_name|default:"Not provided" }}
+                            </strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span class="info-icon">
+                            🧑‍💼
+                        </span>
+
+                        <div>
+                            <small>Last Name</small>
+                            <strong>
+                                {{ customer.last_name|default:"Not provided" }}
+                            </strong>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Account Information -->
+
+                <h4 class="section-title mt-5">
+                    🔐 Account Information
+                </h4>
+
+                <div class="account-box">
+
+                    <div>
+                        <small>Account Status</small>
+
+                        <p class="mb-0">
+                            <span class="status-badge">
+                                ● Active
+                            </span>
                         </p>
-
                     </div>
 
-                    <hr>
+                    <div>
+                        <small>User Type</small>
 
-                    <div class="row">
-
-                        <div class="col-md-6 mb-3">
-                            <label class="fw-bold">Full Name</label>
-                            <input type="text"
-                                   class="form-control"
-                                   value="John Doe"
-                                   readonly>
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label class="fw-bold">Email</label>
-                            <input type="email"
-                                   class="form-control"
-                                   value="john@example.com"
-                                   readonly>
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label class="fw-bold">Phone Number</label>
-                            <input type="text"
-                                   class="form-control"
-                                   value="+91 9876543210"
-                                   readonly>
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label class="fw-bold">City</label>
-                            <input type="text"
-                                   class="form-control"
-                                   value="Kochi"
-                                   readonly>
-                        </div>
-
+                        <p class="mb-0">
+                            <strong>Customer</strong>
+                        </p>
                     </div>
 
-                    <div class="text-center mt-4">
+                </div>
 
-                        <a href="#" class="btn btn-primary me-2">
-                            Edit Profile
-                        </a>
 
-                        <a href="{% url 'my_bookings' %}" class="btn btn-success me-2">
-                            My Bookings
-                        </a>
-                        
-                        <a href="#" class="btn btn-outline-secondary">
-                            Change Password
-                        </a>
+                <!-- Buttons -->
 
-                    </div>
+                <div class="profile-actions mt-4">
+
+                    <a
+                        href="{% url 'my_bookings' %}"
+                        class="btn btn-primary">
+
+                        🎫 My Bookings
+
+                    </a>
+
+                    <a
+                        href="{% url 'events' %}"
+                        class="btn btn-outline-primary">
+
+                        🎟️ Browse Events
+
+                    </a>
+
+                    <a
+                        href="{% url 'logout' %}"
+                        class="btn btn-outline-danger">
+
+                        Logout
+
+                    </a>
 
                 </div>
 
@@ -99,5 +168,289 @@
     </div>
 
 </div>
+
+
+<style>
+
+.profile-page {
+
+    min-height: 80vh;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f8f9fa,
+            #eef2ff
+        );
+
+}
+
+
+/* Main Card */
+
+.profile-card {
+
+    max-width: 850px;
+
+    margin: auto;
+
+    background: white;
+
+    border-radius: 25px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,0.12);
+
+}
+
+
+/* Header */
+
+.profile-header {
+
+    background:
+        linear-gradient(
+            135deg,
+            #0d6efd,
+            #6610f2
+        );
+
+    color: white;
+
+    text-align: center;
+
+    padding: 45px 20px;
+
+}
+
+
+/* Avatar */
+
+.profile-avatar {
+
+    width: 100px;
+
+    height: 100px;
+
+    margin: auto;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: white;
+
+    color: #6610f2;
+
+    font-size: 42px;
+
+    font-weight: bold;
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,0.2);
+
+}
+
+
+.profile-header h2 {
+
+    margin-top: 18px;
+
+    margin-bottom: 5px;
+
+    font-weight: 700;
+
+}
+
+
+.profile-header p {
+
+    margin: 0;
+
+    opacity: 0.9;
+
+}
+
+
+/* Body */
+
+.profile-body {
+
+    padding: 40px;
+
+}
+
+
+.section-title {
+
+    font-weight: 700;
+
+    margin-bottom: 25px;
+
+    color: #212529;
+
+}
+
+
+/* Information Grid */
+
+.info-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 20px;
+
+}
+
+
+.info-item {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 18px;
+
+    background: #f8f9fa;
+
+    border-radius: 15px;
+
+    border: 1px solid #eee;
+
+}
+
+
+.info-icon {
+
+    width: 48px;
+
+    height: 48px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #e9ecef;
+
+    border-radius: 12px;
+
+    font-size: 22px;
+
+}
+
+
+.info-item small,
+.account-box small {
+
+    display: block;
+
+    color: #777;
+
+    margin-bottom: 5px;
+
+}
+
+
+.info-item strong {
+
+    display: block;
+
+    color: #212529;
+
+}
+
+
+/* Account Box */
+
+.account-box {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 22px;
+
+    background: #f8f9fa;
+
+    border-radius: 15px;
+
+    border: 1px solid #eee;
+
+}
+
+
+.status-badge {
+
+    color: #198754;
+
+    font-weight: 600;
+
+}
+
+
+/* Buttons */
+
+.profile-actions {
+
+    display: flex;
+
+    gap: 12px;
+
+    flex-wrap: wrap;
+
+}
+
+
+.profile-actions .btn {
+
+    border-radius: 30px;
+
+    padding: 11px 22px;
+
+    font-weight: 600;
+
+}
+
+
+/* Mobile */
+
+@media (max-width: 768px) {
+
+    .info-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .profile-body {
+
+        padding: 25px;
+
+    }
+
+    .account-box {
+
+        flex-direction: column;
+
+    }
+
+}
+
+</style>
 
 {% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'booking/base.html' %}
+
+{% block title %}
+Delete Event
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5" style="max-width:600px;">
+
+    <div class="card shadow p-4">
+
+        <h2 class="text-danger text-center">
+            Delete Event
+        </h2>
+
+        <p class="text-center mt-3">
+            Are you sure you want to delete
+            <strong>{{ event.event_name }}</strong>?
+        </p>
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <button
+                type="submit"
+                class="btn btn-danger w-100">
+
+                Yes, Delete Event
+
+            </button>
+
+        </form>
+
+        <a
+            href="{% url 'my_events' %}"
+            class="btn btn-secondary w-100 mt-2">
+
+            Cancel
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends 'booking/base.html' %}
+
+{% block title %}
+Organizer Login
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5" style="max-width:500px;">
+
+    <div class="card shadow p-4">
+
+        <h2 class="text-center mb-4">
+            🎤 Organizer Login
+        </h2>
+
+        {% if error %}
+        <div class="alert alert-danger">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label>Username</label>
+                <input
+                    type="text"
+                    name="username"
+                    class="form-control"
+                    required>
+            </div>
+
+            <div class="mb-3">
+                <label>Password</label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    class="form-control"
+                    required>
+            </div>
+
+            <div class="form-check mb-3">
+                <input
+                    class="form-check-input"
+                    type="checkbox"
+                    onclick="showPassword()">
+
+                <label class="form-check-label">
+                    Show Password
+                </label>
+            </div>
+
+            <button
+                type="submit"
+                class="btn btn-primary w-100">
+                Login
+            </button>
+
+        </form>
+
+        <p class="text-center mt-3">
+            Don't have an organizer account?
+            <a href="{% url 'organizer_register' %}">
+                Register
+            </a>
+        </p>
+
+    </div>
+
+</div>
+
+<script>
+function showPassword() {
+
+    var x = document.getElementById("password");
+
+    if (x.type === "password") {
+        x.type = "text";
+    } else {
+        x.type = "password";
+    }
+
+}
+</script>
+
+{% endblock %}

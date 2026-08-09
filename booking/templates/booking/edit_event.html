@@ -1,0 +1,210 @@
+{% extends 'booking/base.html' %}
+
+{% block title %}
+Edit Event
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+<div class="card shadow p-4">
+
+<h2 class="text-center mb-4">
+✏ Edit Event
+</h2>
+
+<form method="POST" enctype="multipart/form-data">
+
+{% csrf_token %}
+
+<div class="mb-3">
+<label>Event Name</label>
+<input
+type="text"
+name="event_name"
+class="form-control"
+value="{{ event.event_name }}"
+required>
+</div>
+
+<div class="mb-3">
+
+<label>Category</label>
+
+<select name="category" class="form-select">
+
+<option {% if event.category == "Music" %}selected{% endif %}>Music</option>
+<option {% if event.category == "Technology" %}selected{% endif %}>Technology</option>
+<option {% if event.category == "Business" %}selected{% endif %}>Business</option>
+<option {% if event.category == "Sports" %}selected{% endif %}>Sports</option>
+<option {% if event.category == "Food Festival" %}selected{% endif %}>Food Festival</option>
+<option {% if event.category == "Workshop" %}selected{% endif %}>Workshop</option>
+<option {% if event.category == "Seminar" %}selected{% endif %}>Seminar</option>
+<option {% if event.category == "Conference" %}selected{% endif %}>Conference</option>
+<option {% if event.category == "Cultural Event" %}selected{% endif %}>Cultural Event</option>
+<option {% if event.category == "Comedy Show" %}selected{% endif %}>Comedy Show</option>
+<option {% if event.category == "College Fest" %}selected{% endif %}>College Fest</option>
+
+</select>
+
+</div>
+
+<div class="mb-3">
+
+<label>Description</label>
+
+<textarea
+name="description"
+rows="4"
+class="form-control">{{ event.description }}</textarea>
+
+</div>
+
+<div class="row">
+
+<div class="col-md-6">
+
+<label>Date</label>
+
+<input
+type="date"
+name="date"
+class="form-control"
+value="{{ event.date|date:'Y-m-d' }}">
+
+</div>
+
+<div class="col-md-6">
+
+<label>Time</label>
+
+<input
+type="time"
+name="time"
+class="form-control"
+value="{{ event.time|time:'H:i' }}">
+
+</div>
+
+</div>
+
+<div class="row mt-3">
+
+<div class="col-md-6">
+
+<label>Booking Deadline</label>
+
+<input
+type="date"
+name="booking_deadline"
+class="form-control"
+value="{{ event.booking_deadline|date:'Y-m-d' }}">
+
+</div>
+
+<div class="col-md-6">
+
+<label>Event Type</label>
+
+<select name="event_type" class="form-select">
+
+<option {% if event.event_type == "Offline" %}selected{% endif %}>Offline</option>
+<option {% if event.event_type == "Online" %}selected{% endif %}>Online</option>
+<option {% if event.event_type == "Hybrid" %}selected{% endif %}>Hybrid</option>
+
+</select>
+
+</div>
+
+</div>
+
+<div class="mb-3 mt-3">
+
+<label>Venue</label>
+
+<input
+type="text"
+name="venue"
+class="form-control"
+value="{{ event.venue }}">
+
+</div>
+
+<div class="mb-3">
+
+<label>Contact Number</label>
+
+<input
+type="tel"
+name="contact_number"
+class="form-control"
+value="{{ event.contact_number }}">
+
+</div>
+
+<div class="row">
+
+<div class="col-md-6">
+
+<label>Ticket Price</label>
+
+<input
+type="number"
+name="ticket_price"
+class="form-control"
+value="{{ event.ticket_price }}">
+
+</div>
+
+<div class="col-md-6">
+
+<label>Total Seats</label>
+
+<input
+type="number"
+name="total_seats"
+class="form-control"
+value="{{ event.total_seats }}">
+
+</div>
+
+</div>
+
+<div class="mb-3 mt-3">
+
+<label>Event Image</label>
+
+<input
+type="file"
+name="image"
+class="form-control">
+
+</div>
+
+<div class="mb-3">
+
+<label>Terms & Conditions</label>
+
+<textarea
+name="terms"
+rows="4"
+class="form-control">{{ event.terms }}</textarea>
+
+</div>
+
+<button
+type="submit"
+class="btn btn-primary w-100">
+
+Update Event
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+{% endblock %}

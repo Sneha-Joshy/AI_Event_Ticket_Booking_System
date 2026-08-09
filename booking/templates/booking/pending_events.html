@@ -1,0 +1,114 @@
+{% extends 'booking/base.html' %}
+
+{% block title %}
+Pending Events
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h2 class="text-center mb-4">
+        ⏳ Pending Events
+    </h2>
+
+    {% if events %}
+
+        {% for event in events %}
+
+        <div class="card shadow mb-4">
+
+            <div class="card-body">
+
+                <h4>{{ event.event_name }}</h4>
+
+                <p>
+                    <strong>Organizer:</strong>
+                    {{ event.organizer.organization_name }}
+                </p>
+
+                <p>
+                    <strong>Category:</strong>
+                    {{ event.category }}
+                </p>
+
+                <p>
+                    <strong>Date:</strong>
+                    {{ event.date }}
+                </p>
+
+                <p>
+                    <strong>Time:</strong>
+                    {{ event.time }}
+                </p>
+
+                <p>
+                    <strong>Venue:</strong>
+                    {{ event.venue }}
+                </p>
+
+                <p>
+                    <strong>Ticket Price:</strong>
+                    ₹{{ event.ticket_price }}
+                </p>
+
+                <p>
+                    <strong>Total Seats:</strong>
+                    {{ event.total_seats }}
+                </p>
+
+                <p>
+                    <strong>Status:</strong>
+
+                    <span class="badge bg-warning text-dark">
+                        {{ event.status }}
+                    </span>
+
+                </p>
+
+                {% if event.image %}
+                <img
+                    src="{{ event.image.url }}"
+                    style="width:250px;height:150px;object-fit:cover;"
+                    class="mb-3">
+                {% endif %}
+
+                <div>
+
+                    <a
+                        href="{% url 'update_event_status' event.id 'Approved' %}"
+                        class="btn btn-success">
+
+                        ✅ Approve
+
+                    </a>
+
+                    <a
+                        href="{% url 'update_event_status' event.id 'Rejected' %}"
+                        class="btn btn-danger">
+
+                        ❌ Reject
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="alert alert-info text-center">
+
+            No pending events.
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

@@ -6,11 +6,13 @@ Register
 
 {% block content %}
 
-<div class="container mt-5" style="max-width:500px;">
+<div class="container mt-5" style="max-width: 500px;">
 
     <div class="card shadow p-4">
 
-        <h2 class="text-center mb-4">Create Account</h2>
+        <h2 class="text-center mb-4">
+            📝 Create Account
+        </h2>
 
         {% if error %}
         <div class="alert alert-danger">
@@ -19,35 +21,180 @@ Register
         {% endif %}
 
         <form method="POST">
+
             {% csrf_token %}
 
-            <div class="mb-3">
-                <label>Username</label>
-                <input type="text" name="username" class="form-control" required>
-            </div>
+            <!-- USER TYPE -->
 
             <div class="mb-3">
-                <label>Email</label>
-                <input type="email" name="email" class="form-control" required>
+
+                <label class="form-label">
+                    Register As
+                </label>
+
+                <select
+                    name="user_type"
+                    class="form-control"
+                    required>
+
+                    <option value="">
+                        Select User Type
+                    </option>
+
+                    <option value="customer">
+                        Customer
+                    </option>
+
+                    <option value="organizer">
+                        Organizer
+                    </option>
+
+                </select>
+
             </div>
+
+
+            <!-- USERNAME -->
 
             <div class="mb-3">
-                <label>Password</label>
-                <input type="password" name="password" class="form-control" required>
+
+                <label>
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    name="username"
+                    class="form-control"
+                    placeholder="Enter username"
+                    required>
+
             </div>
 
-            <button type="submit" class="btn btn-success w-100">
+
+            <!-- EMAIL -->
+
+            <div class="mb-3">
+
+                <label>
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    name="email"
+                    class="form-control"
+                    placeholder="Enter email"
+                    required>
+
+            </div>
+
+
+            <!-- PASSWORD -->
+
+            <div class="mb-3">
+
+                <label>
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    name="password"
+                    id="password"
+                    class="form-control"
+                    placeholder="Enter password"
+                    required>
+
+            </div>
+
+
+            <!-- CONFIRM PASSWORD -->
+
+            <div class="mb-3">
+
+                <label>
+                    Confirm Password
+                </label>
+
+                <input
+                    type="password"
+                    name="confirm_password"
+                    id="confirm_password"
+                    class="form-control"
+                    placeholder="Confirm password"
+                    required>
+
+            </div>
+
+
+            <!-- SHOW PASSWORD -->
+
+            <div class="form-check mb-3">
+
+                <input
+                    type="checkbox"
+                    class="form-check-input"
+                    id="showPassword">
+
+                <label
+                    class="form-check-label"
+                    for="showPassword">
+
+                    Show Password
+
+                </label>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn btn-success w-100">
+
                 Register
+
             </button>
+
         </form>
 
+
         <p class="text-center mt-3">
+
             Already have an account?
-            <a href="{% url 'login' %}">Login</a>
+
+            <a href="{% url 'login' %}">
+                Login
+            </a>
+
         </p>
 
     </div>
 
 </div>
+
+
+<script>
+
+document.getElementById("showPassword").addEventListener("change", function() {
+
+    let password = document.getElementById("password");
+    let confirmPassword = document.getElementById("confirm_password");
+
+    if (this.checked) {
+
+        password.type = "text";
+        confirmPassword.type = "text";
+
+    } else {
+
+        password.type = "password";
+        confirmPassword.type = "password";
+
+    }
+
+});
+
+</script>
 
 {% endblock %}

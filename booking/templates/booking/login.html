@@ -1,20 +1,14 @@
 {% extends 'booking/base.html' %}
 
-
 {% block title %}
 Login
 {% endblock %}
 
-
-
 {% block content %}
-
 
 <section class="login-section">
 
-
 <div class="login-box">
-
 
 <h2>🎟️ Welcome Back</h2>
 
@@ -22,21 +16,51 @@ Login
 Login to book your favourite events
 </p>
 
-
 {% if error %}
 
 <p style="color:red;">
-{{error}}
+{{ error }}
 </p>
 
 {% endif %}
-
-
 
 <form method="POST">
 
 {% csrf_token %}
 
+<!-- USER TYPE -->
+
+<div class="mb-3">
+
+<label>
+Login As
+</label>
+
+<select
+    name="user_type"
+    class="form-control"
+    required>
+
+    <option value="">Select User Type</option>
+
+    <option value="customer">
+        Customer
+    </option>
+
+    <option value="organizer">
+        Organizer
+    </option>
+
+    <option value="admin">
+        Admin
+    </option>
+
+</select>
+
+</div>
+
+
+<!-- USERNAME -->
 
 <div class="mb-3">
 
@@ -44,7 +68,7 @@ Login to book your favourite events
 Username
 </label>
 
-<input 
+<input
 type="text"
 name="username"
 class="form-control"
@@ -54,14 +78,13 @@ required>
 </div>
 
 
-
+<!-- PASSWORD -->
 
 <div class="mb-3">
 
 <label>
 Password
 </label>
-
 
 <input
 type="password"
@@ -70,12 +93,10 @@ class="form-control"
 placeholder="Enter password"
 required>
 
-
 </div>
 
 
-
-<button 
+<button
 type="submit"
 class="btn btn-warning w-100">
 
@@ -83,13 +104,10 @@ Login
 
 </button>
 
-
-
 </form>
 
 
-
-<p class="mt-3 text-center">
+<p class="mt-3">
 
 Don't have an account?
 
@@ -102,14 +120,10 @@ Register
 
 </div>
 
-
 </section>
 
 
-
-
 <style>
-
 
 .login-section{
 
@@ -124,7 +138,6 @@ align-items:center;
 background:#f5f5f5;
 
 }
-
 
 
 .login-box{
@@ -142,7 +155,6 @@ box-shadow:0px 10px 25px rgba(0,0,0,0.2);
 }
 
 
-
 .login-box h2{
 
 text-align:center;
@@ -150,7 +162,6 @@ text-align:center;
 font-weight:bold;
 
 }
-
 
 
 .login-box p{
@@ -162,7 +173,6 @@ color:#777;
 }
 
 
-
 .form-control{
 
 padding:12px;
@@ -170,7 +180,6 @@ padding:12px;
 border-radius:10px;
 
 }
-
 
 
 .btn-warning{
@@ -183,9 +192,6 @@ border-radius:10px;
 
 }
 
-
 </style>
-
-
 
 {% endblock %}

@@ -1,7 +1,7 @@
 {% extends 'booking/base.html' %}
 
 {% block title %}
-Event Details
+{{ event.event_name }}
 {% endblock %}
 
 {% block content %}
@@ -13,40 +13,39 @@ Event Details
         <!-- Event Image -->
         <div class="col-md-6">
 
-            <img src="https://picsum.photos/600/400?5"
-                 class="img-fluid rounded shadow">
+            <img src="{{ event.image.url }}"
+                 class="img-fluid rounded shadow"
+                 alt="{{ event.event_name }}">
 
         </div>
 
         <!-- Event Details -->
         <div class="col-md-6">
 
-            <h2>🎵 Music Concert</h2>
+            <h2>{{ event.event_name }}</h2>
 
             <hr>
 
-            <p><strong>Date:</strong> 20 August 2026</p>
+            <p><strong>Date:</strong> {{ event.date }}</p>
 
-            <p><strong>Time:</strong> 6:00 PM</p>
+            <p><strong>Time:</strong> {{ event.time }}</p>
 
-            <p><strong>Venue:</strong> Kochi</p>
+            <p><strong>Venue:</strong> {{ event.venue }}</p>
 
-            <p><strong>Category:</strong> Music</p>
+            <p><strong>Category:</strong> {{ event.category }}</p>
 
-            <p><strong>Ticket Price:</strong> ₹499</p>
+            <p><strong>Ticket Price:</strong> ₹{{ event.ticket_price }}</p>
 
-            <p><strong>Available Seats:</strong> 120</p>
+            <p><strong>Available Seats:</strong> {{ event.available_seats }}</p>
 
-            <p>
-                Enjoy a live music concert featuring famous artists with an
-                unforgettable experience.
-            </p>
+            <p>{{ event.description }}</p>
 
             <a href="{% url 'events' %}" class="btn btn-secondary">
-    ← Back
+                ← Back
             </a>
 
-            <a href="{% url 'booking' %}" class="btn btn-warning btn-lg">
+            
+            <a href="{% url 'booking' event.id %}" class="btn btn-warning btn-lg">
     🎫 Book Now
 </a>
 

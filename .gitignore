@@ -1,0 +1,15 @@
+venv/
+__pycache__/
+*.pyc
+
+db.sqlite3
+
+.env
+
+booking/migrations/__pycache__/
+
+# Ignore miscellaneous files in project root
+/*.png
+/*.jpg
+/*.jpeg
+/*.pdf

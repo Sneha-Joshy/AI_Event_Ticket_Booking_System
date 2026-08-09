@@ -1,0 +1,183 @@
+{% extends 'booking/base.html' %}
+
+{% block title %}
+Add Event
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="card shadow p-4">
+
+        <h2 class="text-center mb-4">
+            ➕ Add New Event
+        </h2>
+
+        <form method="POST" enctype="multipart/form-data">
+
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label">Event Name</label>
+                <input type="text" name="event_name" class="form-control"
+                    placeholder="Enter Event Name" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Category</label>
+
+                <select name="category" class="form-select" required>
+                    <option value="">Select Category</option>
+                    <option>Music</option>
+                    <option>Technology</option>
+                    <option>Business</option>
+                    <option>Sports</option>
+                    <option>Food Festival</option>
+                    <option>Workshop</option>
+                    <option>Seminar</option>
+                    <option>Conference</option>
+                    <option>Cultural Event</option>
+                    <option>Comedy Show</option>
+                    <option>College Fest</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea name="description" rows="4"
+                    class="form-control"
+                    placeholder="Enter Event Description"
+                    required></textarea>
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6">
+                    <label class="form-label">Event Date</label>
+                    <input type="date" name="date"
+                        class="form-control" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Event Time</label>
+                    <input type="time" name="time"
+                        class="form-control" required>
+                </div>
+
+            </div>
+
+            <div class="row mt-3">
+
+                <div class="col-md-6">
+                    <label class="form-label">Booking Deadline</label>
+                    <input type="date" name="booking_deadline"
+                        class="form-control" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Event Type</label>
+
+                    <select name="event_type" class="form-select">
+                        <option>Offline</option>
+                        <option>Online</option>
+                        <option>Hybrid</option>
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="mb-3 mt-3">
+                <label class="form-label">Venue</label>
+
+                <input type="text"
+                    name="venue"
+                    class="form-control"
+                    placeholder="Enter Venue"
+                    required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Organizer Contact Number</label>
+
+                <input
+                    type="tel"
+                    name="contact_number"
+                    class="form-control"
+                    pattern="[6-9][0-9]{9}"
+                    maxlength="10"
+                    placeholder="Enter 10-digit mobile number"
+                    required>
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6">
+
+                    <label class="form-label">Ticket Price (₹)</label>
+
+                    <input
+                        type="number"
+                        name="ticket_price"
+                        class="form-control"
+                        min="0"
+                        required>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <label class="form-label">Total Seats</label>
+
+                    <input
+                        type="number"
+                        name="total_seats"
+                        class="form-control"
+                        min="1"
+                        required>
+
+                </div>
+
+            </div>
+
+            <div class="mb-3 mt-3">
+
+                <label class="form-label">Event Image</label>
+
+                <input
+                    type="file"
+                    name="image"
+                    class="form-control"
+                    accept="image/*"
+                    required>
+
+            </div>
+
+            <div class="mb-3">
+
+                <label class="form-label">Terms & Conditions</label>
+
+                <textarea
+                    name="terms"
+                    rows="4"
+                    class="form-control"
+                    placeholder="Enter event rules (optional)"></textarea>
+
+            </div>
+
+            <button
+                type="submit"
+                class="btn btn-success w-100">
+
+                Submit Event
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

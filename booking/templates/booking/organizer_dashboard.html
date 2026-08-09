@@ -1,0 +1,67 @@
+{% extends 'booking/base.html' %}
+
+{% block title %}
+Organizer Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="card shadow p-4">
+
+        <h2 class="text-center">
+            🎤 Welcome, {{ organizer.organization_name }}
+        </h2>
+
+        <hr>
+
+        <div class="row text-center mt-4">
+
+
+         
+
+            <div class="col-md-4 mb-3">
+                 <a href="{% url 'add_event' %}" class="btn btn-primary w-100">
+                  ➕ Add Event
+                 </a>
+                
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <a href="{% url 'my_events' %}" class="btn btn-success w-100">
+                    📅 My Events
+                </a>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <a href="#" class="btn btn-warning w-100">
+                    🎫 View Bookings
+                </a>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <a href="#" class="btn btn-info w-100">
+                    📊 Ticket Sales
+                </a>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <a href="#" class="btn btn-secondary w-100">
+                    👤 Profile
+                </a>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <a href="{% url 'logout' %}" class="btn btn-danger w-100">
+                    🚪 Logout
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

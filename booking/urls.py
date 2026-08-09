@@ -12,9 +12,9 @@ urlpatterns = [
 
     path("events/", views.events, name="events"),
 
-    path("event-details/", views.event_details, name="event_details"),
+    path('event/<int:id>/', views.event_details, name='event_details'),
 
-    path("booking/", views.booking, name="booking"),
+    path("booking/<int:id>/", views.booking, name="booking"),
 
     path("payment/", views.payment, name="payment"),
 
@@ -26,8 +26,72 @@ urlpatterns = [
 
     path("profile/", views.profile, name="profile"),
 
-    path('my-bookings/', views.my_bookings, name='my_bookings')
-    
+    path('my-bookings/', views.my_bookings, name='my_bookings'),
 
+    path("organizer/register/", views.organizer_register, name="organizer_register"),
+
+    path("organizer/login/", views.organizer_login, name="organizer_login"),
+
+    path("logout/", views.logout_view, name="logout"),
+
+    path("organizer/add-event/", views.add_event, name="add_event"),
+
+
+    path(
+    "organizer/dashboard/",
+    views.organizer_dashboard,
+    name="organizer_dashboard"
+),
+
+    path(
+    "organizer/my-events/",
+    views.my_events,
+    name="my_events"
+),
+
+    path(
+    "organizer/edit-event/<int:id>/",
+    views.edit_event,
+    name="edit_event"
+),
+    path(
+    "organizer/delete-event/<int:id>/",
+    views.delete_event,
+    name="delete_event"
+),
+
+    path(
+    "organizer/edit-event/<int:id>/",
+    views.edit_event,
+    name="edit_event"
+),
+
+    path(
+    "organizer/view-bookings/<int:id>/",
+    views.view_bookings,
+    name="view_bookings"
+),
+
+    path(
+    "admin-dashboard/",
+    views.admin_dashboard,
+    name="admin_dashboard"
+),
+    path(
+    "admin-dashboard/pending-events/",
+    views.pending_events,
+    name="pending_events"
+),
+
+    path(
+    "admin-dashboard/event-status/<int:id>/<str:status>/",
+    views.update_event_status,
+    name="update_event_status"
+),
+    path(
+    "admin-login/",
+    views.admin_login,
+    name="admin_login"
+),
 
 ]

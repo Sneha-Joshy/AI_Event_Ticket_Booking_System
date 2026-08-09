@@ -1,0 +1,67 @@
+{% extends 'booking/base.html' %}
+
+{% block title %}
+View Bookings
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h2 class="text-center mb-4">
+        🎫 Bookings for {{ event.event_name }}
+    </h2>
+
+    {% if bookings %}
+
+    <table class="table table-bordered table-hover">
+
+        <thead class="table-dark">
+
+            <tr>
+                <th>Customer Name</th>
+                <th>Email</th>
+                <th>Tickets</th>
+                <th>Total Amount</th>
+                <th>Booking Date</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% for booking in bookings %}
+
+            <tr>
+
+                <td>{{ booking.customer_name }}</td>
+
+                <td>{{ booking.customer_email }}</td>
+
+                <td>{{ booking.tickets }}</td>
+
+                <td>₹{{ booking.total_amount }}</td>
+
+                <td>{{ booking.booking_date }}</td>
+
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+    {% else %}
+
+    <div class="alert alert-warning text-center">
+
+        No bookings found for this event.
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
