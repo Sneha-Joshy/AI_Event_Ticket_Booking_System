@@ -1,0 +1,417 @@
+{% extends 'booking/base.html' %}
+
+{% block title %}
+Digital Ticket
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="ticket-container">
+
+        <div class="ticket-header">
+
+            <div>
+                <h2>🎟️ Digital Event Ticket</h2>
+                <p>AI Event Booking</p>
+            </div>
+
+            <div class="ticket-status">
+                CONFIRMED
+            </div>
+
+        </div>
+
+
+        <div class="ticket-body">
+
+            <div class="ticket-main">
+
+                <h1>
+                    {{ booking.event.event_name }}
+                </h1>
+
+                <hr>
+
+                <div class="row">
+
+                    <div class="col-md-6">
+
+                        <p>
+                            📅 <strong>Date</strong>
+                        </p>
+
+                        <p>
+                            {{ booking.event.date }}
+                        </p>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <p>
+                            ⏰ <strong>Time</strong>
+                        </p>
+
+                        <p>
+                            {{ booking.event.time }}
+                        </p>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <p>
+                            📍 <strong>Venue</strong>
+                        </p>
+
+                        <p>
+                            {{ booking.event.venue }}
+                        </p>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <p>
+                            🎟️ <strong>Tickets</strong>
+                        </p>
+
+                        <p>
+                            {{ booking.tickets }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="customer-details mt-4">
+
+                    <h5>Customer Details</h5>
+
+                    <p>
+                        <strong>Name:</strong>
+                        {{ booking.customer_name }}
+                    </p>
+
+                    <p>
+                        <strong>Email:</strong>
+                        {{ booking.customer_email }}
+                    </p>
+
+                </div>
+
+
+                <div class="booking-details mt-4">
+
+                    <p>
+                        <strong>Booking ID:</strong>
+                        #{{ booking.id }}
+                    </p>
+
+                    <p>
+                        <strong>Booking Date:</strong>
+                        {{ booking.booking_date }}
+                    </p>
+
+                    <p>
+                        <strong>Total Amount:</strong>
+                        ₹{{ booking.total_amount }}
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="ticket-side">
+
+                <div class="qr-box">
+
+    <img
+        src="data:image/png;base64,{{ qr_code }}"
+        alt="Booking QR Code"
+        class="qr-image">
+
+</div>
+
+<p class="mt-3 mb-1">
+    Scan to verify ticket
+</p>
+
+<strong>
+    Booking #{{ booking.id }}
+</strong>
+
+                <p>
+                    Booking ID
+                </p>
+
+                <strong>
+                    #{{ booking.id }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="ticket-footer">
+
+            <p>
+                Please present this ticket at the event entrance.
+            </p>
+
+           <a
+    href="{% url 'download_ticket_pdf' booking.id %}"
+    class="btn btn-success me-2">
+
+    📄 Download PDF
+
+</a>
+
+<a
+    href="{% url 'my_bookings' %}"
+    class="btn btn-primary">
+
+    ← Back to My Bookings
+
+</a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+
+.ticket-container {
+
+    max-width: 950px;
+
+    margin: auto;
+
+    background: white;
+
+    border-radius: 25px;
+
+    overflow: hidden;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+
+}
+
+
+.ticket-header {
+
+    background: linear-gradient(
+        135deg,
+        #6610f2,
+        #0d6efd
+    );
+
+    color: white;
+
+    padding: 30px 40px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+}
+
+
+.ticket-header h2 {
+
+    margin: 0;
+
+    font-weight: bold;
+
+}
+
+
+.ticket-header p {
+
+    margin: 5px 0 0;
+
+}
+
+
+.ticket-status {
+
+    background: #198754;
+
+    padding: 10px 18px;
+
+    border-radius: 20px;
+
+    font-weight: bold;
+
+}
+
+
+.ticket-body {
+
+    display: flex;
+
+    padding: 40px;
+
+}
+
+
+.ticket-main {
+
+    flex: 1;
+
+}
+
+
+.ticket-main h1 {
+
+    color: #6610f2;
+
+    font-weight: bold;
+
+}
+
+
+.ticket-main p {
+
+    color: #555;
+
+}
+
+
+.customer-details {
+
+    background: #f8f9fa;
+
+    padding: 20px;
+
+    border-radius: 15px;
+
+}
+
+
+.booking-details {
+
+    background: #f8f9fa;
+
+    padding: 20px;
+
+    border-radius: 15px;
+
+}
+
+
+.ticket-side {
+
+    width: 220px;
+
+    margin-left: 40px;
+
+    text-align: center;
+
+    border-left: 2px dashed #ccc;
+
+    padding-left: 30px;
+
+}
+.qr-box {
+    width: 180px;
+    height: 180px;
+    background: white;
+    padding: 10px;
+    border-radius: 15px;
+    margin: 20px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.qr-image {
+    width: 160px;
+    height: 160px;
+    object-fit: contain;
+}
+
+
+
+.ticket-footer {
+
+    border-top: 2px dashed #ddd;
+
+    padding: 25px;
+
+    text-align: center;
+
+}
+
+
+.ticket-footer p {
+
+    color: #777;
+
+}
+
+
+.btn {
+
+    border-radius: 25px;
+
+    padding: 10px 25px;
+
+}
+
+
+@media (max-width: 768px) {
+
+    .ticket-body {
+
+        flex-direction: column;
+
+    }
+
+    .ticket-side {
+
+        width: 100%;
+
+        margin-left: 0;
+
+        border-left: none;
+
+        border-top: 2px dashed #ccc;
+
+        margin-top: 30px;
+
+        padding-top: 20px;
+
+        padding-left: 0;
+
+    }
+
+    .ticket-header {
+
+        flex-direction: column;
+
+        text-align: center;
+
+        gap: 15px;
+
+    }
+
+}
+
+</style>
+
+{% endblock %}pip install reportlab

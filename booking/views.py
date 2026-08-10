@@ -1,4 +1,6 @@
 import re
+import base64
+import qrcode
 from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
@@ -8,33 +10,85 @@ from django.contrib.auth.models import User
 from .models import Event, Booking, Organizer
 from django.contrib.auth.decorators import login_required
 
+from django.http import HttpResponse, JsonResponse
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+
+from io import BytesIO
 
 
+from google import genai
+
+client = genai.Client()
+
+
+@login_required
 def booking(request, id):
-    event = get_object_or_404(Event, id=id)
+
+    event = get_object_or_404(
+        Event,
+        id=id,
+        status="Approved"
+    )
 
     if request.method == "POST":
-        customer_name = request.POST.get("customer_name")
-        customer_email = request.POST.get("customer_email")
-        tickets = int(request.POST.get("tickets"))
+
+        try:
+            tickets = int(request.POST.get("tickets", 0))
+        except (TypeError, ValueError):
+            tickets = 0
+
+        if tickets <= 0:
+
+            messages.error(
+                request,
+                "Please select at least 1 ticket."
+            )
+
+            return render(
+                request,
+                "booking/booking.html",
+                {"event": event}
+            )
+
+        if tickets > event.available_seats:
+
+            messages.error(
+                request,
+                f"Only {event.available_seats} seats are available."
+            )
+
+            return render(
+                request,
+                "booking/booking.html",
+                {"event": event}
+            )
 
         total_amount = event.ticket_price * tickets
 
-        Booking.objects.create(
+        new_booking = Booking.objects.create(
             event=event,
-            customer_name=customer_name,
-            customer_email=customer_email,
+            customer_name=request.user.get_full_name() or request.user.username,
+            customer_email=request.user.email,
             tickets=tickets,
             total_amount=total_amount
         )
 
-        return redirect("payment")
+        event.available_seats -= tickets
+        event.save()
 
-    return render(request, "booking/booking.html", {"event": event})
+        return redirect(
+            "payment",
+            id=new_booking.id
+        )
 
-
-
-
+    return render(
+        request,
+        "booking/booking.html",
+        {
+            "event": event
+        }
+    )
 
 
 
@@ -284,18 +338,69 @@ def register_view(request):
         request,
         "booking/register.html"
     )
+
 def events(request):
-    events = Event.objects.filter(status=True)
-    return render(request, 'booking/events.html', {'events': events})
+
+    events = Event.objects.filter(
+        status="Approved"
+    ).order_by("date", "time")
+
+    return render(
+        request,
+        "booking/events.html",
+        {
+            "events": events
+        }
+    )
 
 
 
 
-def payment(request):
-    return render(request, "booking/payment.html")
+@login_required
+def payment(request, id):
 
-def success(request):
-    return render(request, "booking/success.html")
+    booking = get_object_or_404(
+        Booking,
+        id=id,
+        customer_email=request.user.email
+    )
+
+    if request.method == "POST":
+
+        messages.success(
+            request,
+            "Payment successful!"
+        )
+
+        return redirect(
+            "success",
+            id=booking.id
+        )
+
+    return render(
+        request,
+        "booking/payment.html",
+        {
+            "booking": booking
+        }
+    )
+
+@login_required
+def success(request, id):
+
+    booking = get_object_or_404(
+        Booking,
+        id=id,
+        customer_email=request.user.email
+    )
+
+    return render(
+        request,
+        "booking/success.html",
+        {
+            "booking": booking
+        }
+    )
 
 def about(request):
     return render(request, "booking/about.html")
@@ -723,7 +828,159 @@ def admin_login(request):
         request,
         "booking/admin_login.html"
     )
+@login_required
+def view_ticket(request, id):
 
+    booking = get_object_or_404(
+        Booking,
+        id=id,
+        customer_email=request.user.email
+    )
+
+    qr_data = (
+        f"Booking ID: {booking.id}\n"
+        f"Customer: {booking.customer_name}\n"
+        f"Event: {booking.event.event_name}\n"
+        f"Date: {booking.event.date}\n"
+        f"Tickets: {booking.tickets}"
+    )
+
+    qr = qrcode.make(qr_data)
+
+    buffer = BytesIO()
+
+    qr.save(buffer, format="PNG")
+
+    qr_base64 = base64.b64encode(
+        buffer.getvalue()
+    ).decode()
+
+    return render(
+        request,
+        "booking/view_ticket.html",
+        {
+            "booking": booking,
+            "qr_code": qr_base64
+        }
+    )
+
+
+
+@login_required
+def download_ticket_pdf(request, id):
+
+    booking = get_object_or_404(
+        Booking,
+        id=id,
+        customer_email=request.user.email
+    )
+
+    response = HttpResponse(
+        content_type="application/pdf"
+    )
+
+    response["Content-Disposition"] = (
+        f'attachment; filename="ticket_{booking.id}.pdf"'
+    )
+
+    pdf = canvas.Canvas(
+        response,
+        pagesize=A4
+    )
+
+    width, height = A4
+
+    # Title
+    pdf.setFont("Helvetica-Bold", 24)
+    pdf.drawCentredString(
+        width / 2,
+        height - 70,
+        "AI Event Booking"
+    )
+
+    pdf.setFont("Helvetica-Bold", 20)
+    pdf.drawCentredString(
+        width / 2,
+        height - 110,
+        "DIGITAL EVENT TICKET"
+    )
+
+    # Line
+    pdf.line(
+        50,
+        height - 130,
+        width - 50,
+        height - 130
+    )
+
+    # Event name
+    pdf.setFont("Helvetica-Bold", 16)
+    pdf.drawString(
+        60,
+        height - 175,
+        booking.event.event_name
+    )
+
+    pdf.setFont("Helvetica", 12)
+
+    y = height - 220
+
+    pdf.drawString(60, y, f"Booking ID: #{booking.id}")
+    y -= 30
+
+    pdf.drawString(60, y, f"Customer: {booking.customer_name}")
+    y -= 30
+
+    pdf.drawString(60, y, f"Email: {booking.customer_email}")
+    y -= 30
+
+    pdf.drawString(60, y, f"Date: {booking.event.date}")
+    y -= 30
+
+    pdf.drawString(60, y, f"Time: {booking.event.time}")
+    y -= 30
+
+    pdf.drawString(60, y, f"Venue: {booking.event.venue}")
+    y -= 30
+
+    pdf.drawString(60, y, f"Tickets: {booking.tickets}")
+    y -= 30
+
+    pdf.drawString(
+        60,
+        y,
+        f"Total Amount: Rs. {booking.total_amount}"
+    )
+
+    y -= 30
+
+    pdf.drawString(
+        60,
+        y,
+        f"Booking Date: {booking.booking_date}"
+    )
+
+    y -= 60
+
+    pdf.setFont("Helvetica-Bold", 14)
+
+    pdf.drawString(
+        60,
+        y,
+        "Status: CONFIRMED"
+    )
+
+    pdf.setFont("Helvetica", 10)
+
+    pdf.drawCentredString(
+        width / 2,
+        50,
+        "Please present this ticket at the event entrance."
+    )
+
+    pdf.save()
+
+    return response
 
 
 
@@ -732,3 +989,85 @@ def logout_view(request):
     logout(request)
     messages.success(request, "Logged out successfully.")
     return redirect("home")
+
+
+def chatbot(request):
+
+    if request.method == "POST":
+
+        user_message = request.POST.get("message", "").strip()
+
+        if not user_message:
+            return JsonResponse({
+                "response": "Please enter a message."
+            })
+
+        # Get approved events from database
+        events = Event.objects.filter(status="Approved")
+
+        event_data = []
+
+        for event in events:
+
+            event_data.append(
+                f"""
+Event: {event.event_name}
+Category: {event.category}
+Date: {event.date}
+Time: {event.time}
+Venue: {event.venue}
+Ticket Price: ₹{event.ticket_price}
+Available Seats: {event.available_seats}
+Description: {event.description}
+"""
+            )
+
+        events_information = "\n".join(event_data)
+
+        system_prompt = f"""
+You are the AI Event Booking Assistant for an event ticket
+booking website.
+
+Answer the customer's questions politely and clearly.
+
+Here are the approved events from the website database:
+
+{events_information}
+
+Important rules:
+
+1. Only provide event information from the data above.
+2. Do not invent events, prices, dates, venues or seat counts.
+3. If the requested information is not available, say that
+   you don't have that information.
+4. Help users understand how to book tickets.
+5. Keep answers concise, friendly and directly answer the user's question.
+6. Do not start every response with "Hello".
+7. Do not add unnecessary booking instructions unless the user asks how to book.
+"""
+
+        try:
+
+            response = client.models.generate_content(
+                model="gemini-3.5-flash-lite",
+                contents=system_prompt + "\n\nUser question:\n" + user_message
+            )
+
+            answer = response.text
+
+            return JsonResponse({
+                "response": answer
+            })
+
+        except Exception as e:
+
+            print("GEMINI ERROR:", repr(e))
+
+            return JsonResponse({
+                "response": f"API Error: {str(e)}"
+            })
+
+    return render(
+        request,
+        "booking/chatbot.html"
+    )

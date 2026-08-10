@@ -6,85 +6,200 @@ Payment
 
 {% block content %}
 
-<div class="container mt-5">
+<div class="container py-5">
 
     <div class="row justify-content-center">
 
-        <div class="col-md-6">
+        <div class="col-lg-7">
 
-            <div class="card shadow p-4">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
 
-                <h2 class="text-center mb-4">
-                    💳 Payment
-                </h2>
+                <!-- Header -->
 
-                <form>
+                <div class="payment-header text-center">
 
-                    <div class="mb-3">
-                        <label class="form-label">
-                            Card Holder Name
-                        </label>
-
-                        <input
-                            type="text"
-                            class="form-control"
-                            placeholder="Enter card holder name">
+                    <div class="payment-icon">
+                        💳
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">
-                            Card Number
-                        </label>
+                    <h2>
+                        Secure Payment
+                    </h2>
 
-                        <input
-                            type="text"
-                            class="form-control"
-                            placeholder="1234 5678 9012 3456">
-                    </div>
+                    <p>
+                        Complete your payment to confirm your booking
+                    </p>
 
-                    <div class="row">
+                </div>
 
-                        <div class="col-md-6">
 
-                            <label class="form-label">
-                                Expiry Date
-                            </label>
+                <div class="card-body p-4 p-md-5">
 
-                            <input
-                                type="month"
-                                class="form-control">
+
+                    <!-- Booking Summary -->
+
+                    <div class="booking-summary mb-4">
+
+                        <h4 class="fw-bold mb-3">
+                            🎫 Booking Summary
+                        </h4>
+
+
+                        <div class="summary-row">
+
+                            <span>Event</span>
+
+                            <strong>
+                                {{ booking.event.event_name }}
+                            </strong>
 
                         </div>
 
-                        <div class="col-md-6">
+
+                        <div class="summary-row">
+
+                            <span>Customer</span>
+
+                            <strong>
+                                {{ booking.customer_name }}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="summary-row">
+
+                            <span>Tickets</span>
+
+                            <strong>
+                                {{ booking.tickets }}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="summary-row total-row">
+
+                            <span>
+                                Total Amount
+                            </span>
+
+                            <strong>
+                                ₹{{ booking.total_amount }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Payment Form -->
+
+                    <form method="POST">
+
+                        {% csrf_token %}
+
+
+                        <h5 class="fw-bold mb-3">
+                            💳 Card Details
+                        </h5>
+
+
+                        <div class="mb-3">
 
                             <label class="form-label">
-                                CVV
+                                Card Holder Name
                             </label>
 
                             <input
-                                type="password"
+                                type="text"
+                                name="card_holder"
                                 class="form-control"
-                                maxlength="3"
-                                placeholder="123">
+                                placeholder="Enter card holder name"
+                                required>
 
                         </div>
 
-                    </div>
 
-                    <div class="mt-4 d-flex justify-content-between">
+                        <div class="mb-3">
 
-                        <a href="{% url 'booking' %}" class="btn btn-secondary">
-                            ← Back
-                        </a>
+                            <label class="form-label">
+                                Card Number
+                            </label>
 
-                        <a href="#" class="btn btn-success">
-                            Pay Now
-                        </a>
+                            <input
+                                type="text"
+                                name="card_number"
+                                class="form-control"
+                                placeholder="1234 5678 9012 3456"
+                                maxlength="19"
+                                required>
 
-                    </div>
+                        </div>
 
-                </form>
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    Expiry Date
+                                </label>
+
+                                <input
+                                    type="month"
+                                    name="expiry"
+                                    class="form-control"
+                                    required>
+
+                            </div>
+
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    CVV
+                                </label>
+
+                                <input
+                                    type="password"
+                                    name="cvv"
+                                    class="form-control"
+                                    maxlength="3"
+                                    placeholder="123"
+                                    required>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Buttons -->
+
+                        <div class="mt-4 d-flex justify-content-between">
+
+                            <a
+                                href="{% url 'booking' booking.event.id %}"
+                                class="btn btn-secondary">
+
+                                ← Back
+
+                            </a>
+
+
+                            <button
+                                type="submit"
+                                class="btn btn-success btn-lg">
+
+                                💳 Pay ₹{{ booking.total_amount }}
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
 
             </div>
 
@@ -93,5 +208,102 @@ Payment
     </div>
 
 </div>
+
+
+<style>
+
+.payment-header {
+
+    background: linear-gradient(
+        135deg,
+        #198754,
+        #20c997
+    );
+
+    color: white;
+
+    padding: 35px 20px;
+
+}
+
+
+.payment-header h2 {
+
+    font-weight: 700;
+
+}
+
+
+.payment-header p {
+
+    margin-bottom: 0;
+
+}
+
+
+.payment-icon {
+
+    font-size: 50px;
+
+    margin-bottom: 10px;
+
+}
+
+
+.booking-summary {
+
+    background: #f8f9fa;
+
+    padding: 25px;
+
+    border-radius: 15px;
+
+}
+
+
+.summary-row {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    padding: 12px 0;
+
+    border-bottom: 1px solid #ddd;
+
+}
+
+
+.total-row {
+
+    border-bottom: none;
+
+    font-size: 20px;
+
+    color: #198754;
+
+}
+
+
+.form-control {
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+}
+
+
+.btn {
+
+    border-radius: 25px;
+
+    padding: 10px 25px;
+
+    font-weight: 600;
+
+}
+
+</style>
 
 {% endblock %}

@@ -1,0 +1,532 @@
+{% extends 'booking/base.html' %}
+
+{% block title %}
+AI Event Assistant
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="chat-container">
+
+        <!-- Header -->
+        <div class="chat-header">
+
+            <div class="bot-icon">
+                🤖
+            </div>
+
+            <div>
+                <h2>AI Event Assistant</h2>
+                <p>Ask me anything about our events</p>
+            </div>
+
+            <span class="online-dot">
+                ● Online
+            </span>
+
+        </div>
+
+
+        <!-- Chat Messages -->
+        <div class="chat-messages" id="chatMessages">
+
+            <div class="message bot-message">
+
+                <div class="message-icon">
+                    🤖
+                </div>
+
+                <div class="message-content">
+                    <strong>AI Assistant</strong>
+
+                    <p>
+                        Hello! 👋 I'm your AI Event Booking Assistant.
+                        I can help you find events, ticket prices,
+                        venues, dates and available seats.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Input -->
+        <div class="chat-input-area">
+
+            <form id="chatForm">
+
+                {% csrf_token %}
+
+                <input
+                    type="text"
+                    id="messageInput"
+                    name="message"
+                    placeholder="Ask about events..."
+                    autocomplete="off"
+                    required>
+
+                <button type="submit">
+                    Send ➤
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+
+.chat-container {
+    max-width: 700px;
+    height: 650px;
+    margin: 20px auto;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}    
+
+
+/* Header */
+
+.chat-header {
+
+    background: linear-gradient(
+        135deg,
+        #6610f2,
+        #0d6efd
+    );
+
+    color: white;
+
+    padding: 18px 25px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+}
+
+
+.bot-icon {
+
+    width: 55px;
+
+    height: 55px;
+
+    background: white;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    font-size: 30px;
+
+}
+
+.chat-header h2 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: bold;
+}
+git status
+
+
+.chat-header p {
+
+    margin: 4px 0 0;
+
+    opacity: 0.9;
+
+}
+
+
+.online-dot {
+
+    margin-left: auto;
+
+    color: #d1ffd1;
+
+    font-size: 14px;
+
+}
+
+
+/* Messages */
+
+.chat-messages {
+
+    height: 420px;
+
+    overflow-y: auto;
+
+    padding: 30px;
+
+    background: #f8f9fa;
+
+}
+
+
+.message {
+
+    display: flex;
+
+    margin-bottom: 20px;
+
+    gap: 10px;
+
+}
+
+
+.message-icon {
+
+    width: 40px;
+
+    height: 40px;
+
+    min-width: 40px;
+
+    background: #6610f2;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+}
+
+
+.message-content {
+
+    max-width: 75%;
+
+    background: white;
+
+    padding: 14px 18px;
+
+    border-radius: 5px 18px 18px 18px;
+
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+
+}
+
+
+.message-content strong {
+
+    color: #6610f2;
+
+}
+
+
+.message-content p {
+
+    margin: 5px 0 0;
+
+    white-space: pre-line;
+
+}
+
+
+/* User message */
+
+.user-message {
+
+    justify-content: flex-end;
+
+}
+
+
+.user-message .message-content {
+
+    background: #0d6efd;
+
+    color: white;
+
+    border-radius: 18px 5px 18px 18px;
+
+}
+
+
+.user-message .message-content strong {
+
+    color: white;
+
+}
+
+
+/* Input */
+
+.chat-input-area {
+
+    padding: 20px;
+
+    background: white;
+
+    border-top: 1px solid #eee;
+
+}
+
+
+#chatForm {
+
+    display: flex;
+
+    gap: 10px;
+
+}
+
+
+#messageInput {
+
+    flex: 1;
+
+    border: 1px solid #ddd;
+
+    border-radius: 30px;
+
+    padding: 14px 20px;
+
+    outline: none;
+
+}
+
+
+#messageInput:focus {
+
+    border-color: #6610f2;
+
+    box-shadow: 0 0 0 3px rgba(102,16,242,0.1);
+
+}
+
+
+#chatForm button {
+
+    border: none;
+
+    border-radius: 30px;
+
+    padding: 12px 25px;
+
+    background: #6610f2;
+
+    color: white;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+}
+
+
+#chatForm button:hover {
+
+    background: #520dc2;
+
+}
+
+
+.typing {
+
+    color: #777;
+
+    font-style: italic;
+
+}
+
+
+</style>
+
+
+<script>
+
+const chatForm = document.getElementById("chatForm");
+
+const messageInput = document.getElementById("messageInput");
+
+const chatMessages = document.getElementById("chatMessages");
+
+
+chatForm.addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+
+    const message = messageInput.value.trim();
+
+
+    if (!message) {
+        return;
+    }
+
+
+    // Display user message
+
+    chatMessages.innerHTML += `
+
+        <div class="message user-message">
+
+            <div class="message-content">
+
+                <strong>You</strong>
+
+                <p>${message}</p>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    messageInput.value = "";
+
+
+    // Scroll down
+
+    chatMessages.scrollTop =
+        chatMessages.scrollHeight;
+
+
+    // Typing message
+
+    const typingMessage = document.createElement("div");
+
+    typingMessage.className = "message bot-message";
+
+    typingMessage.innerHTML = `
+
+        <div class="message-icon">
+            🤖
+        </div>
+
+        <div class="message-content">
+
+            <strong>AI Assistant</strong>
+
+            <p class="typing">
+                Thinking... 🤔
+            </p>
+
+        </div>
+
+    `;
+
+
+    chatMessages.appendChild(typingMessage);
+
+
+    chatMessages.scrollTop =
+        chatMessages.scrollHeight;
+
+
+    try {
+
+        const formData = new FormData();
+
+        formData.append("message", message);
+
+
+        const csrfToken =
+            document.querySelector(
+                "[name=csrfmiddlewaretoken]"
+            ).value;
+
+
+        const response = await fetch(
+            "{% url 'chatbot' %}",
+            {
+                method: "POST",
+
+                headers: {
+                    "X-CSRFToken": csrfToken
+                },
+
+                body: formData
+            }
+        );
+
+
+        const data = await response.json();
+
+
+        typingMessage.remove();
+
+
+        chatMessages.innerHTML += `
+
+            <div class="message bot-message">
+
+                <div class="message-icon">
+                    🤖
+                </div>
+
+                <div class="message-content">
+
+                    <strong>AI Assistant</strong>
+
+                    <p>${data.response}</p>
+
+                </div>
+
+            </div>
+
+        `;
+
+
+        chatMessages.scrollTop =
+            chatMessages.scrollHeight;
+
+
+    } catch (error) {
+
+        typingMessage.remove();
+
+
+        chatMessages.innerHTML += `
+
+            <div class="message bot-message">
+
+                <div class="message-icon">
+                    🤖
+                </div>
+
+                <div class="message-content">
+
+                    <strong>AI Assistant</strong>
+
+                    <p>
+                        Sorry, something went wrong.
+                        Please try again.
+                    </p>
+
+                </div>
+
+            </div>
+
+        `;
+
+    }
+
+});
+
+</script>
+
+{% endblock %}

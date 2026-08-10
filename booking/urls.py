@@ -16,9 +16,19 @@ urlpatterns = [
 
     path("booking/<int:id>/", views.booking, name="booking"),
 
-    path("payment/", views.payment, name="payment"),
+    path("payment/<int:id>/", views.payment, name="payment"),
 
-    path("success/", views.success, name="success"),
+    path("success/<int:id>/", views.success, name="success"),
+
+    path("view-ticket/<int:id>/", views.view_ticket, name="view_ticket"),
+
+    path(
+    "download-ticket/<int:id>/",
+    views.download_ticket_pdf,
+    name="download_ticket_pdf"
+),
+
+
 
     path("about/", views.about, name="about"),
 
@@ -93,5 +103,6 @@ urlpatterns = [
     views.admin_login,
     name="admin_login"
 ),
+    path("chatbot/", views.chatbot, name="chatbot"),
 
 ]
