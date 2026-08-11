@@ -32,6 +32,13 @@ def booking(request, id):
     )
 
     if request.method == "POST":
+     if not request.user.email:
+        messages.error(
+            request,
+            "Please add an email address to your profile before booking."
+        )
+
+        return redirect("profile")
 
         try:
             tickets = int(request.POST.get("tickets", 0))
