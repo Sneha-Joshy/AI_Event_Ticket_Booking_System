@@ -15,6 +15,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 
 from io import BytesIO
+from django.utils import timezone
 
 
 from google import genai
@@ -40,6 +41,17 @@ def booking(request, id):
         id=id,
         status="Approved"
     )
+
+    # Check booking deadline BEFORE creating booking
+    if (
+        event.booking_deadline
+        and timezone.now().date() > event.booking_deadline
+    ):
+        messages.error(
+            request,
+            "Booking for this event has closed."
+        )
+        return redirect("events")
 
     if request.method == "POST":
 
@@ -113,7 +125,6 @@ def booking(request, id):
             "event": event
         }
     )
-
 
 def event_details(request, id):
     event = get_object_or_404(Event, id=id)
