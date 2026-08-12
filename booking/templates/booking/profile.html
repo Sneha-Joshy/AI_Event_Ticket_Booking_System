@@ -12,7 +12,8 @@ My Profile
 
         <div class="profile-card">
 
-            <!-- Profile Header -->
+            <!-- ================= PROFILE HEADER ================= -->
+
             <div class="profile-header">
 
                 <div class="profile-avatar">
@@ -24,14 +25,23 @@ My Profile
                 </h2>
 
                 <p>
-                    Customer Account
+                    {% if customer.is_superuser or customer.is_staff %}
+                        Admin Account
+                    {% elif organizer %}
+                        Organizer Account
+                    {% else %}
+                        Customer Account
+                    {% endif %}
                 </p>
 
             </div>
 
 
-            <!-- Profile Information -->
+            <!-- ================= PROFILE BODY ================= -->
+
             <div class="profile-body">
+
+                <!-- Personal Information -->
 
                 <h4 class="section-title">
                     👤 Personal Information
@@ -39,6 +49,8 @@ My Profile
 
 
                 <div class="info-grid">
+
+                    <!-- Username -->
 
                     <div class="info-item">
 
@@ -48,11 +60,16 @@ My Profile
 
                         <div>
                             <small>Username</small>
-                            <strong>{{ customer.username }}</strong>
+
+                            <strong>
+                                {{ customer.username }}
+                            </strong>
                         </div>
 
                     </div>
 
+
+                    <!-- Email -->
 
                     <div class="info-item">
 
@@ -62,11 +79,16 @@ My Profile
 
                         <div>
                             <small>Email</small>
-                            <strong>{{ customer.email }}</strong>
+
+                            <strong>
+                                {{ customer.email|default:"Not provided" }}
+                            </strong>
                         </div>
 
                     </div>
 
+
+                    <!-- First Name -->
 
                     <div class="info-item">
 
@@ -76,6 +98,7 @@ My Profile
 
                         <div>
                             <small>First Name</small>
+
                             <strong>
                                 {{ customer.first_name|default:"Not provided" }}
                             </strong>
@@ -83,6 +106,8 @@ My Profile
 
                     </div>
 
+
+                    <!-- Last Name -->
 
                     <div class="info-item">
 
@@ -92,6 +117,7 @@ My Profile
 
                         <div>
                             <small>Last Name</small>
+
                             <strong>
                                 {{ customer.last_name|default:"Not provided" }}
                             </strong>
@@ -102,61 +128,133 @@ My Profile
                 </div>
 
 
-                <!-- Account Information -->
+                <!-- ================= ACCOUNT INFORMATION ================= -->
 
                 <h4 class="section-title mt-5">
                     🔐 Account Information
                 </h4>
 
+
                 <div class="account-box">
 
+                    <!-- Account Status -->
+
                     <div>
-                        <small>Account Status</small>
+
+                        <small>
+                            Account Status
+                        </small>
 
                         <p class="mb-0">
+
                             <span class="status-badge">
                                 ● Active
                             </span>
+
                         </p>
+
                     </div>
 
+
+                    <!-- User Type -->
+
                     <div>
-                        <small>User Type</small>
+
+                        <small>
+                            User Type
+                        </small>
 
                         <p class="mb-0">
-                            <strong>Customer</strong>
+
+                            <strong>
+
+                                {% if customer.is_superuser or customer.is_staff %}
+
+                                    Admin
+
+                                {% elif organizer %}
+
+                                    Organizer
+
+                                {% else %}
+
+                                    Customer
+
+                                {% endif %}
+
+                            </strong>
+
                         </p>
+
                     </div>
 
                 </div>
 
 
-                <!-- Buttons -->
+                <!-- ================= BUTTONS ================= -->
 
                 <div class="profile-actions mt-4">
 
-                    <a
-                        href="{% url 'my_bookings' %}"
-                        class="btn btn-primary">
 
-                        🎫 My Bookings
+                    <!-- ADMIN -->
 
-                    </a>
+                    {% if customer.is_superuser or customer.is_staff %}
 
-                    <a
-                        href="{% url 'events' %}"
-                        class="btn btn-outline-primary">
+                        <a
+                            href="/admin/"
+                            class="btn btn-dark"
+                        >
+                            ⚙️ Admin Panel
+                        </a>
 
-                        🎟️ Browse Events
 
-                    </a>
+                    <!-- ORGANIZER -->
+
+                    {% elif organizer %}
+
+                        <a
+                            href="{% url 'my_events' %}"
+                            class="btn btn-primary"
+                        >
+                            📅 My Events
+                        </a>
+
+                        <a
+                            href="{% url 'events' %}"
+                            class="btn btn-outline-primary"
+                        >
+                            🎟️ Browse Events
+                        </a>
+
+
+                    <!-- CUSTOMER -->
+
+                    {% else %}
+
+                        <a
+                            href="{% url 'my_bookings' %}"
+                            class="btn btn-primary"
+                        >
+                            🎫 My Bookings
+                        </a>
+
+                        <a
+                            href="{% url 'events' %}"
+                            class="btn btn-outline-primary"
+                        >
+                            🎟️ Browse Events
+                        </a>
+
+                    {% endif %}
+
+
+                    <!-- LOGOUT -->
 
                     <a
                         href="{% url 'logout' %}"
-                        class="btn btn-outline-danger">
-
+                        class="btn btn-outline-danger"
+                    >
                         Logout
-
                     </a>
 
                 </div>
@@ -169,6 +267,8 @@ My Profile
 
 </div>
 
+
+<!-- ================= CSS ================= -->
 
 <style>
 
@@ -186,7 +286,7 @@ My Profile
 }
 
 
-/* Main Card */
+/* Main Profile Card */
 
 .profile-card {
 
@@ -206,7 +306,7 @@ My Profile
 }
 
 
-/* Header */
+/* ================= PROFILE HEADER ================= */
 
 .profile-header {
 
@@ -275,10 +375,12 @@ My Profile
 
     opacity: 0.9;
 
+    font-size: 18px;
+
 }
 
 
-/* Body */
+/* ================= BODY ================= */
 
 .profile-body {
 
@@ -298,7 +400,7 @@ My Profile
 }
 
 
-/* Information Grid */
+/* ================= INFORMATION GRID ================= */
 
 .info-grid {
 
@@ -327,6 +429,18 @@ My Profile
     border-radius: 15px;
 
     border: 1px solid #eee;
+
+    transition: 0.3s;
+
+}
+
+
+.info-item:hover {
+
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,0.08);
 
 }
 
@@ -373,13 +487,15 @@ My Profile
 }
 
 
-/* Account Box */
+/* ================= ACCOUNT BOX ================= */
 
 .account-box {
 
     display: flex;
 
     justify-content: space-between;
+
+    align-items: center;
 
     gap: 20px;
 
@@ -403,7 +519,7 @@ My Profile
 }
 
 
-/* Buttons */
+/* ================= BUTTONS ================= */
 
 .profile-actions {
 
@@ -424,10 +540,19 @@ My Profile
 
     font-weight: 600;
 
+    transition: 0.3s;
+
 }
 
 
-/* Mobile */
+.profile-actions .btn:hover {
+
+    transform: translateY(-2px);
+
+}
+
+
+/* ================= MOBILE ================= */
 
 @media (max-width: 768px) {
 
@@ -446,6 +571,8 @@ My Profile
     .account-box {
 
         flex-direction: column;
+
+        align-items: flex-start;
 
     }
 

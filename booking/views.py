@@ -19,11 +19,21 @@ from io import BytesIO
 
 from google import genai
 
+from .models import *
+
 client = genai.Client()
 
 
 @login_required
 def booking(request, id):
+
+    # Organizers cannot book tickets
+    if Organizer.objects.filter(user=request.user).exists():
+        messages.error(
+            request,
+            "Organizers cannot book tickets."
+        )
+        return redirect("events")
 
     event = get_object_or_404(
         Event,
@@ -32,21 +42,22 @@ def booking(request, id):
     )
 
     if request.method == "POST":
-     if not request.user.email:
-        messages.error(
-            request,
-            "Please add an email address to your profile before booking."
-        )
 
-        return redirect("profile")
+        # Check email before booking
+        if not request.user.email:
+            messages.error(
+                request,
+                "Please add an email address to your profile before booking."
+            )
+            return redirect("profile")
 
         try:
             tickets = int(request.POST.get("tickets", 0))
         except (TypeError, ValueError):
             tickets = 0
 
+        # At least 1 ticket
         if tickets <= 0:
-
             messages.error(
                 request,
                 "Please select at least 1 ticket."
@@ -58,8 +69,8 @@ def booking(request, id):
                 {"event": event}
             )
 
+        # Check available seats
         if tickets > event.available_seats:
-
             messages.error(
                 request,
                 f"Only {event.available_seats} seats are available."
@@ -71,16 +82,22 @@ def booking(request, id):
                 {"event": event}
             )
 
+        # Calculate total amount
         total_amount = event.ticket_price * tickets
 
+        # Create booking
         new_booking = Booking.objects.create(
             event=event,
-            customer_name=request.user.get_full_name() or request.user.username,
+            customer_name=(
+                request.user.get_full_name()
+                or request.user.username
+            ),
             customer_email=request.user.email,
             tickets=tickets,
             total_amount=total_amount
         )
 
+        # Reduce available seats
         event.available_seats -= tickets
         event.save()
 
@@ -98,7 +115,6 @@ def booking(request, id):
     )
 
 
-
 def event_details(request, id):
     event = get_object_or_404(Event, id=id)
     return render(request, "booking/event_details.html", {
@@ -106,10 +122,20 @@ def event_details(request, id):
     })
 
 
-
-
 def index(request):
-    return render(request, "booking/index.html")
+
+    featured_events = Event.objects.filter(
+        status="Approved"
+    ).order_by("-created_at")[:3]
+
+    return render(
+        request,
+        "booking/index.html",
+        {
+            "featured_events": featured_events
+        }
+    )
+
 
 
 def login_view(request):
@@ -418,13 +444,19 @@ def contact(request):
 @login_required
 def profile(request):
 
+    organizer = Organizer.objects.filter(
+        user=request.user
+    ).first()
+
     return render(
         request,
         "booking/profile.html",
         {
-            "customer": request.user
+            "customer": request.user,
+            "organizer": organizer
         }
     )
+
 
 @login_required
 def my_bookings(request):

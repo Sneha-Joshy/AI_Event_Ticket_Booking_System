@@ -2,6 +2,7 @@
 {% block title %}About{% endblock %}
 
 {% block content %}
+{% load static %}
 
 <div class="container py-5">
 
@@ -23,8 +24,15 @@
 
         <div class="col-lg-6">
 
-            <img src="https://picsum.photos/600/400"
-                 class="img-fluid rounded shadow">
+            {% load static %}
+
+
+  
+     <img src="{% static 'images/s.png' %}"
+     class="img-fluid rounded shadow"
+     alt="AI Event Ticket Booking System">
+
+          
 
         </div>
 

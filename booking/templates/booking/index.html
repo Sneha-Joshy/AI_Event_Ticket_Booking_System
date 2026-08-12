@@ -1,413 +1,1027 @@
 {% extends 'booking/base.html' %}
 
 {% block title %}
-Home
+Home | AI Event Booking
 {% endblock %}
-
 
 {% block content %}
 
-<!-- Hero Section -->
+<style>
+
+/* =========================
+   HERO
+========================= */
+
+.hero {
+    min-height: 620px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+
+    background:
+        radial-gradient(circle at 85% 20%, rgba(255,255,255,.18), transparent 25%),
+        radial-gradient(circle at 10% 90%, rgba(255,255,255,.12), transparent 25%),
+        linear-gradient(135deg, #312e81, #6d28d9, #2563eb);
+
+    color: white;
+    padding: 90px 20px;
+}
+
+.hero-content {
+    max-width: 850px;
+}
+
+.hero-badge {
+    display: inline-block;
+    padding: 9px 18px;
+    border-radius: 50px;
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.25);
+    font-weight: 600;
+    margin-bottom: 22px;
+}
+
+.hero h1 {
+    font-size: clamp(2.7rem, 6vw, 4.7rem);
+    line-height: 1.08;
+    font-weight: 800;
+    text-shadow: none;
+}
+
+.hero-description {
+    max-width: 700px;
+    font-size: 1.18rem;
+    line-height: 1.7;
+    opacity: .92;
+    margin-top: 22px;
+}
+
+.hero-buttons {
+    margin-top: 32px;
+}
+
+.hero-buttons .btn {
+    margin-right: 10px;
+    margin-bottom: 10px;
+    padding: 13px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+
+/* =========================
+   GENERAL SECTIONS
+========================= */
+
+.section {
+    padding: 75px 0;
+}
+
+.section-title {
+    font-weight: 800;
+    color: #1f2937;
+}
+
+.section-subtitle {
+    color: #6b7280;
+    max-width: 650px;
+    margin: 12px auto 45px;
+    font-size: 1.05rem;
+}
+
+
+/* =========================
+   ABOUT
+========================= */
+
+.about-box {
+    background: white;
+    padding: 35px;
+    border-radius: 22px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.07);
+}
+
+.about-box h3 {
+    font-weight: 800;
+}
+
+.about-box p {
+    color: #6b7280;
+    line-height: 1.8;
+}
+
+
+/* =========================
+   AI FEATURES
+========================= */
+
+.feature-card {
+    height: 100%;
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    border: 1px solid #eef0f5;
+    box-shadow: 0 8px 28px rgba(0,0,0,.07);
+    transition: .3s;
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0,0,0,.12);
+}
+
+.feature-icon {
+    width: 62px;
+    height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eef2ff;
+    border-radius: 16px;
+    font-size: 30px;
+    margin-bottom: 20px;
+}
+
+.feature-card h4 {
+    font-weight: 700;
+}
+
+.feature-card p {
+    color: #6b7280;
+    line-height: 1.7;
+}
+
+
+/* =========================
+   EVENTS
+========================= */
+
+.event-card {
+    height: 100%;
+    border: none;
+    border-radius: 22px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 8px 25px rgba(0,0,0,.08);
+    transition: .3s;
+}
+
+.event-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 38px rgba(0,0,0,.14);
+}
+
+.event-icon {
+    height: 175px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 65px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+}
+
+.event-body {
+    padding: 26px;
+}
+
+.event-body h4 {
+    font-weight: 750;
+}
+
+.event-body p {
+    color: #6b7280;
+    line-height: 1.6;
+}
+
+.event-tag {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 30px;
+    background: #eef2ff;
+    color: #4f46e5;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+
+/* =========================
+   CATEGORIES
+========================= */
+
+.category-card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px 15px;
+    height: 100%;
+    border: 1px solid #eef0f5;
+    box-shadow: 0 7px 22px rgba(0,0,0,.06);
+    transition: .3s;
+}
+
+.category-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 13px 30px rgba(0,0,0,.11);
+}
+
+.category-icon {
+    font-size: 42px;
+    margin-bottom: 14px;
+}
+
+.category-card h5 {
+    font-weight: 700;
+}
+
+.category-card p {
+    color: #6b7280;
+    margin-bottom: 0;
+}
+
+
+/* =========================
+   HOW IT WORKS
+========================= */
+
+.step-card {
+    height: 100%;
+    padding: 30px 20px;
+}
+
+.step-number {
+    width: 58px;
+    height: 58px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.step-card h4 {
+    font-weight: 700;
+}
+
+.step-card p {
+    color: #6b7280;
+}
+
+
+/* =========================
+   STATISTICS
+========================= */
+
+.stats-section {
+    background: #111827;
+    color: white;
+    padding: 70px 0;
+}
+
+.stat-number {
+    font-size: 2.7rem;
+    font-weight: 800;
+}
+
+.stat-label {
+    color: #cbd5e1;
+    font-size: 1rem;
+}
+
+
+/* =========================
+   CTA
+========================= */
+
+.cta {
+    margin: 75px 0;
+    padding: 70px 25px;
+    border-radius: 25px;
+    color: white;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    box-shadow: 0 15px 40px rgba(79,70,229,.25);
+}
+
+.cta h2 {
+    font-weight: 800;
+}
+.modern-hero {
+    min-height: 680px;
+    padding: 100px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+    color: white;
+
+    background:
+        radial-gradient(
+            circle at 50% 20%,
+            rgba(139,92,246,.45),
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            #312e81,
+            #6d28d9,
+            #2563eb
+        );
+}
+
+
+.modern-hero-title {
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    line-height: 1.05;
+    font-weight: 850;
+    letter-spacing: -2px;
+    margin: 25px auto;
+    text-align: center;
+}
+
+
+.modern-hero-title span {
+    display: inline;
+
+    background: linear-gradient(
+        90deg,
+        #fbbf24,
+        #fb7185
+    );
+
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+
+.modern-hero-text {
+    max-width: 750px;
+    font-size: 19px;
+    line-height: 1.7;
+    color: #e0e7ff;
+    text-align: center;
+}
+
+
+.hero-label {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+.hero-actions {
+    display: flex;
+    gap: 14px;
+    margin-top: 28px;
+    justify-content: center;
+}
+
+
+.hero-mini-stats {
+    display: flex;
+    gap: 35px;
+    margin-top: 40px;
+    justify-content: center;
+}
+.explore-btn {
+    background: #685f79;
+    color: white;
+    border: none;
+}
+
+.explore-btn:hover {
+    background: #514a61;
+    color: white;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+
+    .hero {
+        min-height: 560px;
+        text-align: center;
+    }
+
+    .hero h1 {
+        font-size: 2.7rem;
+    }
+
+    .hero-description {
+        font-size: 1rem;
+    }
+
+}
+
+</style>
+
+
+<!-- =========================
+     HERO SECTION
+========================= -->
 
 <section class="hero">
+     <div class="container"> 
+        <h1 class="display-3 fw-bold"> 
+            🎟️ AI Event Ticket Booking System 
+        </h1> <p class="lead mt-3"> 
+            Discover, book and enjoy amazing events with the power of Artificial Intelligence. 
+        </p>
+         <p> 
+            Our AI assistant helps you find events based on your interests, location and preferences. 
+        </p> 
+        <a href="{% url 'events' %}" class="btn btn-primary btn-lg mt-3 "> 
+            Explore Events </a>
+             <a href="{% url 'login' %}" class="btn btn-light btn-lg mt-3"> 
+                Login </a>
+            </div> 
+        </section>
+
+<!-- =========================
+     ABOUT SECTION
+========================= -->
+
+<section class="section">
+
+    <div class="container">
+
+        <div class="row align-items-center g-5">
+
+            <div class="col-lg-6">
+
+                <div class="about-box">
+
+                    <span class="event-tag">
+                        ABOUT THE PLATFORM
+                    </span>
+
+                    <h3>
+                        Your Smart Event Booking Companion
+                    </h3>
+
+                    <p>
+                        AI Event Ticket Booking System is a smart
+                        online platform designed to make discovering
+                        and booking events simple and convenient.
+                    </p>
+
+                    <p>
+                        Users can explore events, book tickets,
+                        receive digital tickets and interact with
+                        an AI assistant for event-related information.
+                    </p>
+
+                    <a href="{% url 'events' %}"
+                       class="btn btn-primary mt-2">
+                        Explore Events →
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-lg-6">
+
+                <div class="row g-3">
+
+                    <div class="col-6">
+
+                        <div class="feature-card">
+
+                            <div class="feature-icon">
+                                🤖
+                            </div>
+
+                            <h5>AI Assistant</h5>
+
+                            <p>
+                                Get instant event information.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-6">
+
+                        <div class="feature-card">
+
+                            <div class="feature-icon">
+                                🎫
+                            </div>
+
+                            <h5>Digital Tickets</h5>
+
+                            <p>
+                                QR-coded digital tickets.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-6">
+
+                        <div class="feature-card">
+
+                            <div class="feature-icon">
+                                🔎
+                            </div>
+
+                            <h5>Easy Discovery</h5>
+
+                            <p>
+                                Find events quickly.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-6">
+
+                        <div class="feature-card">
+
+                            <div class="feature-icon">
+                                🔐
+                            </div>
+
+                            <h5>Secure Booking</h5>
+
+                            <p>
+                                Safe and simple booking.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     FEATURED EVENTS
+========================= -->
+
+<section class="section bg-light">
+
+    <div class="container">
+
+        <div class="text-center">
+
+            <span class="event-tag">
+                DISCOVER
+            </span>
+
+            <h2 class="section-title mt-2">
+                🔥 Featured Events
+            </h2>
+
+            <p class="section-subtitle">
+                Explore the latest approved events and find
+                your next unforgettable experience.
+            </p>
+
+        </div>
+
+
+        <div class="row g-4">
+
+            {% for event in featured_events %}
+
+            <div class="col-md-4">
+
+                <div class="event-card h-100">
+
+                    <!-- Event Image -->
+
+                    <div style="height:220px; overflow:hidden;">
+
+                        <img
+                            src="{{ event.image.url }}"
+                            alt="{{ event.event_name }}"
+                            style="
+                                width:100%;
+                                height:100%;
+                                object-fit:cover;
+                            "
+                        >
+
+                    </div>
+
+
+                    <!-- Event Details -->
+
+                    <div class="event-body">
+
+                        <span class="event-tag">
+                            {{ event.category }}
+                        </span>
+
+
+                        <h4>
+                            {{ event.event_name }}
+                        </h4>
+
+
+                        <p>
+                            {{ event.description|truncatewords:18 }}
+                        </p>
+
+
+                        <div class="mb-2">
+
+                            <small class="text-muted">
+                                📅 {{ event.date }}
+                            </small>
+
+                        </div>
+
+
+                        <div class="mb-2">
+
+                            <small class="text-muted">
+                                📍 {{ event.venue }}
+                            </small>
+
+                        </div>
+
+
+                        <div class="mb-3">
+
+                            <strong>
+                                ₹{{ event.ticket_price }}
+                            </strong>
+
+                            <span class="text-muted">
+                                &nbsp; | &nbsp;
+                                {{ event.available_seats }} seats left
+                            </span>
+
+                        </div>
+
+
+                        <a
+                            href="{% url 'events' %}"
+                            class="btn btn-primary"
+                        >
+                            View Event →
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <div class="col-12 text-center">
+
+                <div class="alert alert-info">
+
+                    No approved events available at the moment.
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        <!-- View All Events -->
+
+        <div class="text-center mt-5">
+
+            <a
+                href="{% url 'events' %}"
+                class="btn btn-outline-primary btn-lg"
+            >
+                View All Events →
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- =========================
+     CATEGORIES
+========================= -->
+
+<section class="section">
+
+    <div class="container">
+
+        <div class="text-center">
+
+            <h2 class="section-title">
+                Explore Event Categories
+            </h2>
+
+            <p class="section-subtitle">
+                Find experiences that match your interests.
+            </p>
+
+        </div>
+
+
+        <div class="row g-4 text-center">
+
+
+            <div class="col-6 col-md-3">
+
+                <div class="category-card">
+
+                    <div class="category-icon">
+                        🎶
+                    </div>
+
+                    <h5>Music</h5>
+
+                    <p>
+                        Concerts & Festivals
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-6 col-md-3">
+
+                <div class="category-card">
+
+                    <div class="category-icon">
+                        🏏
+                    </div>
+
+                    <h5>Sports</h5>
+
+                    <p>
+                        Matches & Tournaments
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-6 col-md-3">
+
+                <div class="category-card">
+
+                    <div class="category-icon">
+                        🎓
+                    </div>
+
+                    <h5>Education</h5>
+
+                    <p>
+                        Workshops & Seminars
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-6 col-md-3">
+
+                <div class="category-card">
+
+                    <div class="category-icon">
+                        🎭
+                    </div>
+
+                    <h5>Entertainment</h5>
+
+                    <p>
+                        Shows & Programs
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     HOW IT WORKS
+========================= -->
+
+<section class="section bg-light">
+
+    <div class="container">
+
+        <div class="text-center">
+
+            <h2 class="section-title">
+                How It Works
+            </h2>
+
+            <p class="section-subtitle">
+                Book your favourite event in three simple steps.
+            </p>
+
+        </div>
+
+
+        <div class="row g-4 text-center">
+
+
+            <div class="col-md-4">
+
+                <div class="step-card">
+
+                    <div class="step-number">
+                        1
+                    </div>
+
+                    <h4>
+                        Discover
+                    </h4>
+
+                    <p>
+                        Browse and explore events
+                        from different categories.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <div class="step-card">
+
+                    <div class="step-number">
+                        2
+                    </div>
+
+                    <h4>
+                        Ask AI
+                    </h4>
+
+                    <p>
+                        Get instant event information
+                        from our AI assistant.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <div class="step-card">
+
+                    <div class="step-number">
+                        3
+                    </div>
+
+                    <h4>
+                        Book Ticket
+                    </h4>
+
+                    <p>
+                        Complete your booking and
+                        receive a digital ticket.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     STATISTICS
+========================= -->
+
+<section class="stats-section">
+
+    <div class="container">
+
+        <div class="row text-center g-4">
+
+
+            <div class="col-6 col-md-3">
+
+                <div class="stat-number">
+                    500+
+                </div>
+
+                <div class="stat-label">
+                    Events
+                </div>
+
+            </div>
+
+
+            <div class="col-6 col-md-3">
+
+                <div class="stat-number">
+                    10K+
+                </div>
+
+                <div class="stat-label">
+                    Users
+                </div>
+
+            </div>
+
+
+            <div class="col-6 col-md-3">
+
+                <div class="stat-number">
+                    50+
+                </div>
+
+                <div class="stat-label">
+                    Organizers
+                </div>
+
+            </div>
+
+
+            <div class="col-6 col-md-3">
+
+                <div class="stat-number">
+                    24/7
+                </div>
+
+                <div class="stat-label">
+                    AI Support
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     FINAL CTA
+========================= -->
 
 <div class="container">
 
-<h1 class="display-3 fw-bold">
-🎟️ AI Event Ticket Booking System
-</h1>
+    <section class="cta text-center">
 
-<p class="lead mt-3">
-Discover, book and enjoy amazing events with the power of Artificial Intelligence.
-</p>
+        <h2>
+            Ready to Discover Your Next Event?
+        </h2>
 
-<p>
-Our AI assistant helps you find events based on your interests, location and preferences.
-</p>
+        <p class="mt-3">
+            Explore exciting events and book your
+            tickets with our intelligent platform.
+        </p>
 
-<a href="{% url 'events' %}" class="btn btn-warning btn-lg mt-3">
-Explore Events
-</a>
+        <a href="{% url 'events' %}"
+           class="btn btn-warning btn-lg mt-3">
+            🎟️ Explore Events
+        </a>
 
-<a href="{% url 'login' %}" class="btn btn-light btn-lg mt-3">
-Login
-</a>
+    </section>
 
 </div>
-
-</section>
-
-
-
-<!-- About Section -->
-
-<div class="container mt-5">
-
-<div class="row align-items-center">
-
-<div class="col-md-6">
-
-<h2>
-About Our Platform
-</h2>
-
-<p>
-AI Event Ticket Booking System is a smart online platform that allows users
-to search, explore and book tickets for different events easily.
-</p>
-
-<p>
-Using Artificial Intelligence, the system provides personalized event
-recommendations and improves the overall booking experience.
-</p>
-
-
-</div>
-
-
-<div class="col-md-6">
-
-<div class="card shadow p-4">
-
-<h4>🤖 AI Powered Features</h4>
-
-<ul>
-
-<li>Smart Event Recommendations</li>
-
-<li>AI Chatbot Assistance</li>
-
-<li>Personalized Suggestions</li>
-
-<li>Digital QR Code Tickets</li>
-
-<li>Email Booking Confirmation</li>
-
-</ul>
-
-</div>
-
-
-</div>
-
-</div>
-
-</div>
-
-
-
-
-<!-- Featured Events -->
-
-
-<div class="container mt-5">
-
-
-<h2 class="text-center mb-4">
-🔥 Popular Events
-</h2>
-
-
-<div class="row">
-
-
-<div class="col-md-4">
-
-<div class="card shadow">
-
-<div class="card-body text-center">
-
-
-<h3>🎵 Music Concert</h3>
-
-<p>
-Experience live performances from popular artists with thousands of fans.
-</p>
-
-<button class="btn btn-primary">
-Book Now
-</button>
-
-
-</div>
-
-</div>
-
-</div>
-
-
-
-<div class="col-md-4">
-
-<div class="card shadow">
-
-<div class="card-body text-center">
-
-
-<h3>💻 Tech Conference</h3>
-
-<p>
-Connect with developers, innovators and AI professionals.
-</p>
-
-<button class="btn btn-primary">
-Book Now
-</button>
-
-
-</div>
-
-</div>
-
-</div>
-
-
-
-
-<div class="col-md-4">
-
-<div class="card shadow">
-
-<div class="card-body text-center">
-
-
-<h3>🍔 Food Festival</h3>
-
-<p>
-Explore international cuisines and exciting food experiences.
-</p>
-
-<button class="btn btn-primary">
-Book Now
-</button>
-
-
-</div>
-
-</div>
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-<!-- Categories -->
-
-
-<div class="container mt-5">
-
-
-<h2 class="text-center">
-Event Categories
-</h2>
-
-
-<div class="row text-center mt-4">
-
-
-<div class="col-md-3">
-
-<div class="card p-3 shadow">
-
-<h4>🎶 Music</h4>
-
-<p>Concerts and festivals</p>
-
-</div>
-
-</div>
-
-
-
-<div class="col-md-3">
-
-<div class="card p-3 shadow">
-
-<h4>🏏 Sports</h4>
-
-<p>Matches and tournaments</p>
-
-</div>
-
-</div>
-
-
-
-
-<div class="col-md-3">
-
-<div class="card p-3 shadow">
-
-<h4>🎓 Education</h4>
-
-<p>Workshops and seminars</p>
-
-</div>
-
-</div>
-
-
-
-
-<div class="col-md-3">
-
-<div class="card p-3 shadow">
-
-<h4>🎭 Entertainment</h4>
-
-<p>Shows and programs</p>
-
-</div>
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-<!-- How it works -->
-
-
-<div class="container mt-5">
-
-
-<h2 class="text-center">
-How It Works
-</h2>
-
-
-<div class="row mt-4 text-center">
-
-
-<div class="col-md-4">
-
-<h3>1️⃣ Search</h3>
-
-<p>
-Find your favourite events easily.
-</p>
-
-</div>
-
-
-<div class="col-md-4">
-
-<h3>2️⃣ AI Suggestion</h3>
-
-<p>
-Get smart recommendations based on your interests.
-</p>
-
-</div>
-
-
-<div class="col-md-4">
-
-<h3>3️⃣ Book Ticket</h3>
-
-<p>
-Make secure payments and receive digital tickets.
-</p>
-
-</div>
-
-
-</div>
-
-</div>
-
-
-
-
-
-<!-- Statistics -->
-
-
-<div class="container mt-5">
-
-<div class="row text-center">
-
-
-<div class="col-md-3">
-
-<h2>500+</h2>
-
-<p>Events</p>
-
-</div>
-
-
-<div class="col-md-3">
-
-<h2>10K+</h2>
-
-<p>Users</p>
-
-</div>
-
-
-<div class="col-md-3">
-
-<h2>50+</h2>
-
-<p>Organizers</p>
-
-</div>
-
-
-<div class="col-md-3">
-
-<h2>24/7</h2>
-
-<p>AI Support</p>
-
-</div>
-
-
-</div>
-
-</div>
-
-
-
-
-<!-- Final Section -->
-
-
-<section class="bg-primary text-white mt-5 p-5 text-center">
-
-
-<h2>
-Ready to Explore Amazing Events?
-</h2>
-
-
-<p>
-Join our AI-powered event booking platform today.
-</p>
-
-
-<button class="btn btn-warning btn-lg">
-Get Started
-</button>
-
-
-</section>
-
 
 
 {% endblock %}
