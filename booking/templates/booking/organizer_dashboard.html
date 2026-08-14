@@ -35,19 +35,20 @@ Organizer Dashboard
             </div>
 
             <div class="col-md-4 mb-3">
-                <a href="#" class="btn btn-warning w-100">
-                    🎫 View Bookings
-                </a>
+                <a href="{% url 'organizer_bookings' %}" class="btn btn-warning w-100">
+    🎫 View Bookings
+</a>
             </div>
 
             <div class="col-md-4 mb-3">
-                <a href="#" class="btn btn-info w-100">
-                    📊 Ticket Sales
-                </a>
+                <a href="{% url 'ticket_sales' %}" class="btn btn-info w-100">
+    📊 Ticket Sales
+</a>
+            
             </div>
 
             <div class="col-md-4 mb-3">
-                <a href="#" class="btn btn-secondary w-100">
+                <a href="{% url 'profile' %}" class="btn btn-secondary w-100">
                     👤 Profile
                 </a>
             </div>

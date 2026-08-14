@@ -99,6 +99,17 @@ urlpatterns = [
     name="update_event_status"
 ),
     path(
+    "organizer/ticket-sales/",
+    views.ticket_sales,
+    name="ticket_sales"
+),
+    path(
+    "organizer/bookings/",
+    views.organizer_bookings,
+    name="organizer_bookings"
+),
+     
+    path(
     "admin-login/",
     views.admin_login,
     name="admin_login"

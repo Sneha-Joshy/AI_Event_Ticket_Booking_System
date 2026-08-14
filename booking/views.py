@@ -785,6 +785,76 @@ def view_bookings(request, id):
             "bookings": bookings
         }
     )
+@login_required
+def organizer_bookings(request):
+
+    organizer = Organizer.objects.get(user=request.user)
+
+    events = Event.objects.filter(
+        organizer=organizer
+    )
+
+    bookings = Booking.objects.filter(
+        event__in=events
+    ).select_related("event").order_by("-booking_date")
+
+    return render(
+        request,
+        "booking/organizer_bookings.html",
+        {
+            "bookings": bookings
+        }
+    )
+
+
+@login_required
+def ticket_sales(request):
+
+    organizer = Organizer.objects.get(user=request.user)
+
+    events = Event.objects.filter(
+        organizer=organizer
+    )
+
+    total_tickets = 0
+    total_revenue = 0
+
+    sales_data = []
+
+    for event in events:
+
+        bookings = Booking.objects.filter(
+            event=event
+        )
+
+        tickets_sold = sum(
+            booking.tickets
+            for booking in bookings
+        )
+
+        revenue = sum(
+            booking.total_amount
+            for booking in bookings
+        )
+
+        total_tickets += tickets_sold
+        total_revenue += revenue
+
+        sales_data.append({
+            "event": event,
+            "tickets_sold": tickets_sold,
+            "revenue": revenue
+        })
+
+    return render(
+        request,
+        "booking/ticket_sales.html",
+        {
+            "sales_data": sales_data,
+            "total_tickets": total_tickets,
+            "total_revenue": total_revenue
+        }
+    )
 @user_passes_test(lambda user: user.is_staff)
 def admin_dashboard(request):
 

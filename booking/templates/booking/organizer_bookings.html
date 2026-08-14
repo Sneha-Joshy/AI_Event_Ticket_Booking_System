@@ -1,0 +1,90 @@
+{% extends 'booking/base.html' %}
+
+{% block title %}
+View Bookings
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5 mb-5">
+
+    <h2 class="text-center mb-2">
+        🎫 Event Bookings
+    </h2>
+
+    <p class="text-center text-muted mb-5">
+        View bookings received for your events.
+    </p>
+
+    {% if bookings %}
+
+        <div class="table-responsive shadow rounded">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-dark">
+
+                    <tr>
+                        <th>Event</th>
+                        <th>Customer</th>
+                        <th>Email</th>
+                        <th>Tickets</th>
+                        <th>Total Amount</th>
+                        <th>Booking Date</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for booking in bookings %}
+
+                    <tr>
+
+                        <td>
+                            <strong>
+                                {{ booking.event.event_name }}
+                            </strong>
+                        </td>
+
+                        <td>
+                            {{ booking.customer_name }}
+                        </td>
+
+                        <td>
+                            {{ booking.customer_email }}
+                        </td>
+
+                        <td>
+                            🎟️ {{ booking.tickets }}
+                        </td>
+
+                        <td>
+                            ₹{{ booking.total_amount }}
+                        </td>
+
+                        <td>
+                            {{ booking.booking_date|date:"d M Y, h:i A" }}
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class="alert alert-info text-center">
+            No bookings have been received for your events yet.
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
