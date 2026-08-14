@@ -45,9 +45,26 @@
             </a>
 
             
-            <a href="{% url 'booking' event.id %}" class="btn btn-warning btn-lg">
-    🎫 Book Now
-</a>
+            
+            {% if user.is_authenticated %}
+
+    <a href="{% url 'booking' event.id %}"
+       class="btn btn-primary">
+        🎟️ Book Ticket
+    </a>
+
+{% else %}
+
+    <div class="alert alert-info mt-3">
+        🔐 Please log in to book tickets for this event.
+    </div>
+
+    <a href="{% url 'login' %}?next={% url 'booking' event.id %}"
+       class="btn btn-primary">
+        🔑 Login to Book
+    </a>
+
+{% endif %}
 
         </div>
 
