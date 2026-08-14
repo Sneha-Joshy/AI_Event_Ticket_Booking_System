@@ -1121,3 +1121,5 @@ Important rules:
         request,
         "booking/chatbot.html"
     )
+
+    
