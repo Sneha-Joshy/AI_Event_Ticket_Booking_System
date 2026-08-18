@@ -13,11 +13,13 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
+from reportlab.lib.utils import ImageReader
 
 from io import BytesIO
 from django.utils import timezone
+from django.core.signing import TimestampSigner, BadSignature, SignatureExpired
 
-
+from .models import Event, Booking, Organizer, ContactMessage, Notification
 from google import genai
 
 from .models import *
@@ -382,22 +384,29 @@ def register_view(request):
         request,
         "booking/register.html"
     )
-
 def events(request):
+
+    category = request.GET.get("category")
 
     events = Event.objects.filter(
         status="Approved"
-    ).order_by("date", "time")
+    )
+
+    if category and category != "All":
+        events = events.filter(
+            category__iexact=category
+        )
+
+    events = events.order_by("date", "time")
 
     return render(
         request,
         "booking/events.html",
         {
-            "events": events
+            "events": events,
+            "selected_category": category
         }
     )
-
-
 
 
 @login_required
@@ -449,8 +458,48 @@ def success(request, id):
 def about(request):
     return render(request, "booking/about.html")
 
+
 def contact(request):
-    return render(request, "booking/contact.html")
+
+    if request.method == "POST":
+
+        name = request.POST.get("name")
+        email = request.POST.get("email")
+        subject = request.POST.get("subject")
+        message = request.POST.get("message")
+
+        if not name or not email or not subject or not message:
+
+            messages.error(
+                request,
+                "Please fill in all the fields."
+            )
+
+            return render(
+                request,
+                "booking/contact.html"
+            )
+
+        ContactMessage.objects.create(
+            user=request.user,
+            name=name,
+            email=email,
+            subject=subject,
+            message=message
+        )
+
+        messages.success(
+            request,
+            "Your message has been submitted successfully. We will get back to you soon."
+        )
+
+        return redirect("contact")
+
+    return render(
+        request,
+        "booking/contact.html"
+    )
+
 
 @login_required
 def profile(request):
@@ -888,6 +937,48 @@ def admin_dashboard(request):
             "total_bookings": total_bookings,
         }
     )
+@user_passes_test(lambda user: user.is_staff)
+def manage_users(request):
+
+    users = User.objects.all().order_by("-date_joined")
+
+    return render(
+        request,
+        "booking/manage_users.html",
+        {
+            "users": users
+        }
+    )
+
+
+@user_passes_test(lambda user: user.is_staff)
+def toggle_user_status(request, id):
+
+    user = get_object_or_404(User, id=id)
+
+    # Prevent admin from deactivating their own account
+    if user == request.user:
+        messages.error(
+            request,
+            "You cannot deactivate your own admin account."
+        )
+        return redirect("manage_users")
+
+    user.is_active = not user.is_active
+    user.save()
+
+    if user.is_active:
+        messages.success(
+            request,
+            f"User '{user.username}' has been activated."
+        )
+    else:
+        messages.success(
+            request,
+            f"User '{user.username}' has been deactivated."
+        )
+
+    return redirect("manage_users")
 
 @user_passes_test(lambda user: user.is_staff)
 def pending_events(request):
@@ -948,6 +1039,7 @@ def admin_login(request):
         request,
         "booking/admin_login.html"
     )
+
 @login_required
 def view_ticket(request, id):
 
@@ -983,9 +1075,6 @@ def view_ticket(request, id):
             "qr_code": qr_base64
         }
     )
-
-
-
 @login_required
 def download_ticket_pdf(request, id):
 
@@ -1010,7 +1099,6 @@ def download_ticket_pdf(request, id):
 
     width, height = A4
 
-    # Title
     pdf.setFont("Helvetica-Bold", 24)
     pdf.drawCentredString(
         width / 2,
@@ -1025,7 +1113,6 @@ def download_ticket_pdf(request, id):
         "DIGITAL EVENT TICKET"
     )
 
-    # Line
     pdf.line(
         50,
         height - 130,
@@ -1033,7 +1120,6 @@ def download_ticket_pdf(request, id):
         height - 130
     )
 
-    # Event name
     pdf.setFont("Helvetica-Bold", 16)
     pdf.drawString(
         60,
@@ -1101,10 +1187,6 @@ def download_ticket_pdf(request, id):
     pdf.save()
 
     return response
-
-
-
-
 def logout_view(request):
     logout(request)
     messages.success(request, "Logged out successfully.")
@@ -1191,5 +1273,252 @@ Important rules:
         request,
         "booking/chatbot.html"
     )
+def qr_download_ticket(request, token):
 
+    signer = TimestampSigner()
+
+    try:
+
+        booking_id = signer.unsign(
+            token,
+            max_age=60 * 60 * 24 * 30
+        )
+
+    except SignatureExpired:
+
+        return HttpResponse(
+            "This ticket link has expired.",
+            status=403
+        )
+
+    except BadSignature:
+
+        return HttpResponse(
+            "Invalid ticket link.",
+            status=403
+        )
+
+    booking = get_object_or_404(
+        Booking,
+        id=booking_id
+    )
+
+    # Create PDF response
+    response = HttpResponse(
+        content_type="application/pdf"
+    )
+
+    response["Content-Disposition"] = (
+        f'attachment; filename="ticket_{booking.id}.pdf"'
+    )
+
+    pdf = canvas.Canvas(
+        response,
+        pagesize=A4
+    )
+
+    width, height = A4
+
+    # Title
+    pdf.setFont(
+        "Helvetica-Bold",
+        24
+    )
+
+    pdf.drawCentredString(
+        width / 2,
+        height - 70,
+        "AI Event Booking"
+    )
+
+    pdf.setFont(
+        "Helvetica-Bold",
+        20
+    )
+
+    pdf.drawCentredString(
+        width / 2,
+        height - 110,
+        "DIGITAL EVENT TICKET"
+    )
+
+    pdf.line(
+        50,
+        height - 130,
+        width - 50,
+        height - 130
+    )
+
+    # Event
+    pdf.setFont(
+        "Helvetica-Bold",
+        16
+    )
+
+    pdf.drawString(
+        60,
+        height - 175,
+        booking.event.event_name
+    )
+
+    pdf.setFont(
+        "Helvetica",
+        12
+    )
+
+    y = height - 220
+
+    pdf.drawString(
+        60,
+        y,
+        f"Booking ID: #{booking.id}"
+    )
+
+    y -= 30
+
+    pdf.drawString(
+        60,
+        y,
+        f"Customer: {booking.customer_name}"
+    )
+
+    y -= 30
+
+    pdf.drawString(
+        60,
+        y,
+        f"Email: {booking.customer_email}"
+    )
+
+    y -= 30
+
+    pdf.drawString(
+        60,
+        y,
+        f"Date: {booking.event.date}"
+    )
+
+    y -= 30
+
+    pdf.drawString(
+        60,
+        y,
+        f"Time: {booking.event.time}"
+    )
+
+    y -= 30
+
+    pdf.drawString(
+        60,
+        y,
+        f"Venue: {booking.event.venue}"
+    )
+
+    y -= 30
+
+    pdf.drawString(
+        60,
+        y,
+        f"Tickets: {booking.tickets}"
+    )
+
+    y -= 30
+
+    pdf.drawString(
+        60,
+        y,
+        f"Total Amount: Rs. {booking.total_amount}"
+    )
+
+    y -= 30
+
+    pdf.drawString(
+        60,
+        y,
+        f"Booking Date: {booking.booking_date}"
+    )
+
+    y -= 50
+
+    pdf.setFont(
+        "Helvetica-Bold",
+        14
+    )
+
+    pdf.drawString(
+        60,
+        y,
+        "Status: CONFIRMED"
+    )
+
+    pdf.setFont(
+        "Helvetica",
+        10
+    )
+
+    pdf.drawCentredString(
+        width / 2,
+        50,
+        "Please present this ticket at the event entrance."
+    )
+
+    pdf.save()
+
+    return response
+@user_passes_test(lambda user: user.is_staff)
+def customer_enquiries(request):
+
+    enquiries = ContactMessage.objects.all().order_by("-created_at")
+
+    return render(
+        request,
+        "booking/customer_enquiries.html",
+        {
+            "enquiries": enquiries
+        }
+    )
+@user_passes_test(lambda user: user.is_staff)
+def resolve_enquiry(request, id):
+
+    enquiry = get_object_or_404(
+        ContactMessage,
+        id=id
+    )
+
+    enquiry.status = "Resolved"
+    enquiry.save()
+
+    # Create notification for the customer
+    if enquiry.user:
+
+        Notification.objects.create(
+            user=enquiry.user,
+            
+            message=(
+                f"Your enquiry '{enquiry.subject}' "
+                "has been resolved by the EventAI support team."
+            )
+        )
     
+    messages.success(
+        request,
+        "Customer enquiry has been marked as resolved."
+    )
+
+    return redirect("customer_enquiries")
+
+
+@login_required
+def notifications(request):
+
+    user_notifications = Notification.objects.filter(
+        user=request.user
+    ).order_by("-created_at")
+
+    return render(
+        request,
+        "booking/notifications.html",
+        {
+            "notifications": user_notifications
+        }
+    )

@@ -105,3 +105,88 @@ class Booking(models.Model):
 
     def __str__(self):
         return f"{self.customer_name} - {self.event.event_name}"
+
+class ContactMessage(models.Model):
+
+    name = models.CharField(max_length=100)
+
+    email = models.EmailField()
+
+    subject = models.CharField(max_length=200)
+
+    message = models.TextField()
+
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ("Pending", "Pending"),
+            ("Resolved", "Resolved"),
+        ],
+        default="Pending"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} - {self.subject}"    
+
+class ContactMessage(models.Model):
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+
+    name = models.CharField(
+        max_length=100
+    )
+
+    email = models.EmailField()
+
+    subject = models.CharField(
+        max_length=200
+    )
+
+    message = models.TextField()
+
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ("Pending", "Pending"),
+            ("Resolved", "Resolved"),
+        ],
+        default="Pending"
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    def __str__(self):
+        return f"{self.name} - {self.subject}" 
+
+
+
+class Notification(models.Model):
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE
+    )
+
+    message = models.TextField()
+
+    is_read = models.BooleanField(
+        default=False
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    def __str__(self):
+        return f"{self.user.username} - {self.message[:30]}"   
+
+

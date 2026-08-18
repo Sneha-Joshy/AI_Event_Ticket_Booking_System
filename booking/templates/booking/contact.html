@@ -2,11 +2,40 @@
 
 {% block content %}
 
+<!-- Success / Error Messages -->
+{% if messages %}
+
+    <div class="container mt-4">
+
+        {% for message in messages %}
+
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show"
+                 role="alert">
+
+                {{ message }}
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert">
+                </button>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+{% endif %}
+
+
+<!-- Contact Section -->
+
 <section class="contact-section py-5">
 
 <div class="container">
 
     <!-- Heading -->
+
     <div class="text-center mb-5">
 
         <h1 class="fw-bold display-5">
@@ -21,11 +50,11 @@
     </div>
 
 
-
     <div class="row g-4">
 
 
         <!-- Contact Information -->
+
         <div class="col-lg-5">
 
             <div class="card shadow-lg border-0 h-100 p-4"
@@ -36,6 +65,8 @@
                     📩 Contact Information
                 </h3>
 
+
+                <!-- Address -->
 
                 <div class="mb-4">
 
@@ -51,6 +82,7 @@
                 </div>
 
 
+                <!-- Email -->
 
                 <div class="mb-4">
 
@@ -65,6 +97,7 @@
                 </div>
 
 
+                <!-- Phone -->
 
                 <div class="mb-4">
 
@@ -79,6 +112,7 @@
                 </div>
 
 
+                <!-- Working Hours -->
 
                 <div>
 
@@ -94,53 +128,59 @@
                 </div>
 
 
+                <!-- Features -->
 
                 <div class="row mt-4">
 
-    <div class="col-md-6 mb-3">
+                    <!-- Easy Booking -->
 
-        <div class="p-3 shadow-sm rounded bg-light text-center">
+                    <div class="col-md-6 mb-3">
 
-            <h4>
-                🎟️
-            </h4>
+                        <div class="p-3 shadow-sm rounded bg-light text-center">
 
-            <h6 class="fw-bold">
-                Easy Event Booking
-            </h6>
+                            <h4>
+                                🎟️
+                            </h4>
 
-            <p class="text-muted small mb-0">
-                Book your favorite events quickly with a simple and smooth ticket booking process.
-            </p>
+                            <h6 class="fw-bold">
+                                Easy Event Booking
+                            </h6>
 
-        </div>
+                            <p class="text-muted small mb-0">
+                                Book your favorite events quickly
+                                with a simple and smooth ticket
+                                booking process.
+                            </p>
 
-    </div>
+                        </div>
 
-
-
-    <div class="col-md-6 mb-3">
-
-        <div class="p-3 shadow-sm rounded bg-light text-center">
-
-            <h4>
-                🤖
-            </h4>
-
-            <h6 class="fw-bold">
-                AI Assistance
-            </h6>
-
-            <p class="text-muted small mb-0">
-                Get smart guidance and support while searching and booking events.
-            </p>
-
-        </div>
-
-    </div>
+                    </div>
 
 
-</div>
+                    <!-- AI Assistance -->
+
+                    <div class="col-md-6 mb-3">
+
+                        <div class="p-3 shadow-sm rounded bg-light text-center">
+
+                            <h4>
+                                🤖
+                            </h4>
+
+                            <h6 class="fw-bold">
+                                AI Assistance
+                            </h6>
+
+                            <p class="text-muted small mb-0">
+                                Get smart guidance and support
+                                while searching and booking events.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
 
 
             </div>
@@ -148,13 +188,9 @@
         </div>
 
 
-
-
-
         <!-- Contact Form -->
 
         <div class="col-lg-7">
-
 
             <div class="card shadow-lg border-0 p-4"
                  style="border-radius:20px;">
@@ -165,12 +201,18 @@
                 </h3>
 
 
+                <!-- Form -->
 
-                <form>
+                <form method="POST"
+                      action="{% url 'contact' %}">
+
+                    {% csrf_token %}
 
 
                     <div class="row">
 
+
+                        <!-- Full Name -->
 
                         <div class="col-md-6 mb-3">
 
@@ -178,14 +220,18 @@
                                 Full Name
                             </label>
 
-                            <input type="text"
-                            class="form-control"
-                            placeholder="Enter your name"
-                            style="height:50px;">
+                            <input
+                                type="text"
+                                name="name"
+                                class="form-control"
+                                placeholder="Enter your name"
+                                style="height:50px;"
+                                required>
 
                         </div>
 
 
+                        <!-- Email -->
 
                         <div class="col-md-6 mb-3">
 
@@ -193,10 +239,13 @@
                                 Email Address
                             </label>
 
-                            <input type="email"
-                            class="form-control"
-                            placeholder="Enter your email"
-                            style="height:50px;">
+                            <input
+                                type="email"
+                                name="email"
+                                class="form-control"
+                                placeholder="Enter your email"
+                                style="height:50px;"
+                                required>
 
                         </div>
 
@@ -204,8 +253,7 @@
                     </div>
 
 
-
-
+                    <!-- Subject -->
 
                     <div class="mb-3">
 
@@ -213,17 +261,18 @@
                             Subject
                         </label>
 
-                        <input type="text"
-                        class="form-control"
-                        placeholder="Booking enquiry / Support"
-                        style="height:50px;">
-
+                        <input
+                            type="text"
+                            name="subject"
+                            class="form-control"
+                            placeholder="Booking enquiry / Support"
+                            style="height:50px;"
+                            required>
 
                     </div>
 
 
-
-
+                    <!-- Message -->
 
                     <div class="mb-3">
 
@@ -231,24 +280,26 @@
                             Message
                         </label>
 
-
-                        <textarea class="form-control"
-                        rows="5"
-                        placeholder="Write your message here"></textarea>
-
+                        <textarea
+                            name="message"
+                            class="form-control"
+                            rows="5"
+                            placeholder="Write your message here"
+                            required></textarea>
 
                     </div>
 
 
+                    <!-- Submit Button -->
 
-
-                    <button class="btn btn-primary px-5 py-2"
-                    style="border-radius:30px;">
+                    <button
+                        type="submit"
+                        class="btn btn-primary px-5 py-2"
+                        style="border-radius:30px;">
 
                         Send Message 🚀
 
                     </button>
-
 
 
                 </form>
@@ -256,9 +307,7 @@
 
             </div>
 
-
         </div>
-
 
 
     </div>
@@ -268,8 +317,6 @@
 </section>
 
 
-
-
 <!-- Extra Section -->
 
 <section class="py-5 bg-light">
@@ -277,62 +324,72 @@
 <div class="container text-center">
 
 
-<h2 class="fw-bold">
-Why Contact EventAI?
-</h2>
+    <h2 class="fw-bold">
+        Why Contact EventAI?
+    </h2>
 
 
-<div class="row mt-4">
+    <div class="row mt-4">
 
 
-<div class="col-md-4">
+        <!-- Easy Booking -->
 
-<h1>🎟️</h1>
+        <div class="col-md-4">
 
-<h5>
-Easy Booking
-</h5>
+            <h1>
+                🎟️
+            </h1>
 
-<p class="text-muted">
-Quick and simple event ticket booking experience.
-</p>
+            <h5>
+                Easy Booking
+            </h5>
 
-</div>
+            <p class="text-muted">
+                Quick and simple event ticket booking experience.
+            </p>
 
-
-
-<div class="col-md-4">
-
-<h1>🤖</h1>
-
-<h5>
-AI Assistance
-</h5>
-
-<p class="text-muted">
-Our AI chatbot helps you find events easily.
-</p>
-
-</div>
+        </div>
 
 
+        <!-- AI Assistance -->
 
-<div class="col-md-4">
+        <div class="col-md-4">
 
-<h1>🔒</h1>
+            <h1>
+                🤖
+            </h1>
 
-<h5>
-Secure Service
-</h5>
+            <h5>
+                AI Assistance
+            </h5>
 
-<p class="text-muted">
-Safe and reliable ticket management.
-</p>
+            <p class="text-muted">
+                Our AI chatbot helps you find events easily.
+            </p>
 
-</div>
+        </div>
 
 
-</div>
+        <!-- Secure Service -->
+
+        <div class="col-md-4">
+
+            <h1>
+                🔒
+            </h1>
+
+            <h5>
+                Secure Service
+            </h5>
+
+            <p class="text-muted">
+                Safe and reliable ticket management.
+            </p>
+
+        </div>
+
+
+    </div>
 
 
 </div>

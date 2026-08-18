@@ -1,0 +1,105 @@
+{% extends "booking/base.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h2 class="mb-4">Manage Users</h2>
+
+    <div class="table-responsive">
+
+        <table class="table table-bordered table-hover">
+
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for user in users %}
+
+                <tr>
+
+                    <td>{{ user.username }}</td>
+
+                    <td>{{ user.email }}</td>
+
+                    <td>
+                        {% if user.is_staff %}
+                            Admin
+                        {% elif user.organizer %}
+                            Organizer
+                        {% else %}
+                            Customer
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if user.is_active %}
+                            <span class="badge bg-success">
+                                Active
+                            </span>
+                        {% else %}
+                            <span class="badge bg-danger">
+                                Inactive
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+
+                        {% if user != request.user %}
+
+                        <a href="{% url 'toggle_user_status' user.id %}"
+                           class="btn btn-sm
+                           {% if user.is_active %}
+                               btn-danger
+                           {% else %}
+                               btn-success
+                           {% endif %}">
+
+                            {% if user.is_active %}
+                                Deactivate
+                            {% else %}
+                                Activate
+                            {% endif %}
+
+                        </a>
+
+                        {% else %}
+
+                        <span class="text-muted">
+                            Current Admin
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="5" class="text-center">
+                        No users found.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

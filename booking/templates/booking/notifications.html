@@ -1,0 +1,51 @@
+{% extends 'booking/base.html' %}
+
+{% block title %}
+Notifications
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h2 class="text-center mb-4">
+        🔔 Notifications
+    </h2>
+
+    {% if notifications %}
+
+        {% for notification in notifications %}
+
+            <div class="card shadow-sm mb-3">
+
+                <div class="card-body">
+
+                    <h6 class="fw-bold">
+                        📩 EventAI Notification
+                    </h6>
+
+                    <p class="mb-1">
+                        {{ notification.message }}
+                    </p>
+
+                    <small class="text-muted">
+                        {{ notification.created_at|date:"d M Y, h:i A" }}
+                    </small>
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="alert alert-info text-center">
+            🔔 No notifications yet.
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

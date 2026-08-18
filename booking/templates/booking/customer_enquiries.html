@@ -1,0 +1,139 @@
+{% extends 'booking/base.html' %}
+
+{% block title %}
+Customer Enquiries
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h2 class="text-center mb-4">
+        📩 Customer Enquiries
+    </h2>
+
+    {% if enquiries %}
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-hover shadow">
+
+                <thead class="table-dark">
+
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Subject</th>
+                        <th>Message</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for enquiry in enquiries %}
+
+                    <tr>
+
+                        <td>
+                            {{ enquiry.name }}
+                        </td>
+
+                        <td>
+                            {{ enquiry.email }}
+                        </td>
+
+                        <td>
+                            {{ enquiry.subject }}
+                        </td>
+
+                        <td>
+                            {{ enquiry.message }}
+                        </td>
+
+                        <td>
+                            {{ enquiry.created_at|date:"d M Y, h:i A" }}
+                        </td>
+
+                        <!-- Status -->
+
+                        <td>
+
+                            {% if enquiry.status == "Pending" %}
+
+                                <span class="badge bg-warning text-dark">
+                                    🟡 Pending
+                                </span>
+
+                            {% elif enquiry.status == "Resolved" %}
+
+                                <span class="badge bg-success">
+                                    ✅ Resolved
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- Action -->
+
+                        <td>
+
+                            {% if enquiry.status == "Pending" %}
+
+                                <a href="{% url 'resolve_enquiry' enquiry.id %}"
+                                   class="btn btn-success btn-sm">
+
+                                    ✅ Resolve
+
+                                </a>
+
+                            {% else %}
+
+                                <span class="text-success fw-bold">
+                                    ✔ Completed
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class="alert alert-info text-center">
+
+            📭 No customer enquiries yet.
+
+        </div>
+
+    {% endif %}
+
+
+    <div class="text-center mt-4">
+
+        <a href="{% url 'admin_dashboard' %}"
+           class="btn btn-secondary">
+
+            ← Back to Admin Dashboard
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

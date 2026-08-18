@@ -241,34 +241,44 @@ Events
             >
 
         </div>
+    
+         <div class="d-flex justify-content-center gap-3 flex-wrap mb-4">
 
+    <!-- All -->
+    <a href="{% url 'events' %}"
+       class="btn btn-outline-primary rounded-pill px-4">
+        All
+    </a>
 
-        <!-- CATEGORY BUTTONS -->
+    <!-- Music -->
+    
+    <a href="{% url 'events' %}?category=Entertainment"
+   class="btn btn-outline-success rounded-pill px-4">
+    🎭 Entertainment
+</a>
 
-        <div class="category-buttons">
+    <!-- Sports -->
+    <!-- Food -->
+<a href="{% url 'events' %}?category=Food"
+   class="btn btn-outline-danger rounded-pill px-4">
+    🍽️ Food
+</a>
 
-            <button class="btn btn-outline-primary">
-                All
-            </button>
+    <!-- Workshop -->
+    <a href="{% url 'events' %}?category=Workshop"
+       class="btn btn-outline-warning rounded-pill px-4">
+        🎓 Workshop
+    </a>
 
-            <button class="btn btn-outline-success">
-                🎵 Music
-            </button>
+    <!-- Conference -->
+    <a href="{% url 'events' %}?category=Conference"
+       class="btn btn-outline-info rounded-pill px-4">
+        💻 Conference
+    </a>
 
-            <button class="btn btn-outline-danger">
-                🏏 Sports
-            </button>
+</div>
 
-            <button class="btn btn-outline-warning">
-                🎓 Workshop
-            </button>
-
-            <button class="btn btn-outline-info">
-                💻 Conference
-            </button>
-
-        </div>
-
+        
 
         <!-- EVENTS -->
 

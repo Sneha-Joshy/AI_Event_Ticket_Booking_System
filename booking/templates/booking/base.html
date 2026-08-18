@@ -300,7 +300,18 @@ data-bs-target="#navbarMenu">
                 Profile
             </a>
         </li>
+        <li class="nav-item">
 
+    <a class="nav-link"
+       href="{% url 'notifications' %}"
+       title="Notifications">
+
+        🔔
+
+    </a>
+
+</li>
+        
         <!-- Logout -->
         <li class="nav-item ms-2">
             <a class="btn btn-outline-light"
@@ -308,6 +319,7 @@ data-bs-target="#navbarMenu">
                 Logout
             </a>
         </li>
+        
 
 
     {% else %}

@@ -1,5 +1,8 @@
 from django.urls import path
 from . import views
+from django.contrib import admin
+from django.urls import path, include
+
 
 
 urlpatterns = [
@@ -115,5 +118,36 @@ urlpatterns = [
     name="admin_login"
 ),
     path("chatbot/", views.chatbot, name="chatbot"),
+   path(
+    "admin-dashboard/manage-users/",
+    views.manage_users,
+    name="manage_users"
+),
+
+    path(
+    "admin-dashboard/toggle-user/<int:id>/",
+    views.toggle_user_status,
+    name="toggle_user_status"
+),
+    path(
+    "ticket/download/<str:token>/",
+    views.qr_download_ticket,
+    name="qr_download_ticket"
+),
+    path(
+    "admin-dashboard/customer-enquiries/",
+    views.customer_enquiries,
+    name="customer_enquiries"
+),
+    path(
+    "admin-dashboard/resolve-enquiry/<int:id>/",
+    views.resolve_enquiry,
+    name="resolve_enquiry"
+),
+    path(
+    "notifications/",
+    views.notifications,
+    name="notifications"
+),
 
 ]
