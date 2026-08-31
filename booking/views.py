@@ -24,6 +24,10 @@ from google import genai
 
 from .models import *
 
+from django.core.mail import send_mail
+from django.conf import settings
+
+
 client = genai.Client()
 
 
@@ -407,8 +411,6 @@ def events(request):
             "selected_category": category
         }
     )
-
-
 @login_required
 def payment(request, id):
 
@@ -420,9 +422,39 @@ def payment(request, id):
 
     if request.method == "POST":
 
+        # Send booking confirmation email
+        send_mail(
+            subject="Booking Confirmation - AI Event Booking",
+            message=f"""
+Dear {booking.customer_name},
+
+Your event ticket booking has been confirmed successfully.
+
+Booking Details
+----------------------------
+Booking ID: #{booking.id}
+Event: {booking.event.event_name}
+Date: {booking.event.date}
+Time: {booking.event.time}
+Venue: {booking.event.venue}
+Number of Tickets: {booking.tickets}
+Total Amount: Rs. {booking.total_amount}
+
+Thank you for using the AI-Powered Event Ticket Booking System.
+
+Please keep your digital ticket with you for the event.
+
+Regards,
+AI Event Booking Team
+""",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[booking.customer_email],
+            fail_silently=False,
+        )
+
         messages.success(
             request,
-            "Payment successful!"
+            "Payment successful! Booking confirmation email sent."
         )
 
         return redirect(
@@ -1506,6 +1538,58 @@ def resolve_enquiry(request, id):
     )
 
     return redirect("customer_enquiries")
+
+
+
+@login_required
+def recommendations(request):
+
+    # Get the customer's previous bookings using their email
+    previous_bookings = Booking.objects.filter(
+        customer_email=request.user.email
+    ).select_related("event")
+
+    # Get categories from previously booked events
+    preferred_categories = set(
+        booking.event.category
+        for booking in previous_bookings
+    )
+
+    # Get approved future events
+    recommended_events = Event.objects.filter(
+        status="Approved",
+        available_seats__gt=0
+    ).order_by("date", "time")
+
+    # If the customer has previous bookings,
+    # show events from their preferred categories first
+    if preferred_categories:
+
+        matching_events = recommended_events.filter(
+            category__in=preferred_categories
+        )
+
+        other_events = recommended_events.exclude(
+            category__in=preferred_categories
+        )
+
+        recommended_events = list(matching_events) + list(other_events)
+
+    else:
+        # New users get upcoming events
+        recommended_events = list(recommended_events)
+
+    # Show only the first 6 recommendations
+    recommended_events = recommended_events[:6]
+
+    return render(
+        request,
+        "booking/recommendations.html",
+        {
+            "recommended_events": recommended_events,
+            "preferred_categories": preferred_categories
+        }
+    )
 
 
 @login_required

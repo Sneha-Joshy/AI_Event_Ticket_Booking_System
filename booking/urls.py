@@ -149,5 +149,10 @@ urlpatterns = [
     views.notifications,
     name="notifications"
 ),
+    path(
+    "recommendations/",
+    views.recommendations,
+    name="recommendations"
+),
 
 ]
