@@ -30,7 +30,6 @@ from django.conf import settings
 
 client = genai.Client()
 
-
 @login_required
 def booking(request, id):
 
@@ -48,7 +47,7 @@ def booking(request, id):
         status="Approved"
     )
 
-    # Check booking deadline BEFORE creating booking
+    # Check booking deadline
     if (
         event.booking_deadline
         and timezone.now().date() > event.booking_deadline
@@ -59,9 +58,14 @@ def booking(request, id):
         )
         return redirect("events")
 
+    # Get seats for this event
+    seats = Seat.objects.filter(
+        event=event
+    ).order_by("id")
+
     if request.method == "POST":
 
-        # Check email before booking
+        # Check email
         if not request.user.email:
             messages.error(
                 request,
@@ -69,38 +73,46 @@ def booking(request, id):
             )
             return redirect("profile")
 
-        try:
-            tickets = int(request.POST.get("tickets", 0))
-        except (TypeError, ValueError):
-            tickets = 0
+        # Get selected seats
+        selected_seat_ids = request.POST.getlist("selected_seats")
 
-        # At least 1 ticket
-        if tickets <= 0:
+        if not selected_seat_ids:
             messages.error(
                 request,
-                "Please select at least 1 ticket."
+                "Please select at least one seat."
             )
 
             return render(
                 request,
                 "booking/booking.html",
-                {"event": event}
+                {
+                    "event": event,
+                    "seats": seats
+                }
             )
 
-        # Check available seats
-        if tickets > event.available_seats:
+        # Get selected seats belonging to this event
+        selected_seats = Seat.objects.filter(
+            id__in=selected_seat_ids,
+            event=event,
+            is_booked=False
+        )
+
+        # Make sure all requested seats are actually available
+        if selected_seats.count() != len(selected_seat_ids):
+
             messages.error(
                 request,
-                f"Only {event.available_seats} seats are available."
+                "One or more selected seats are no longer available. Please select again."
             )
 
-            return render(
-                request,
-                "booking/booking.html",
-                {"event": event}
+            return redirect(
+                "booking",
+                id=event.id
             )
 
-        # Calculate total amount
+        tickets = selected_seats.count()
+
         total_amount = event.ticket_price * tickets
 
         # Create booking
@@ -115,8 +127,20 @@ def booking(request, id):
             total_amount=total_amount
         )
 
-        # Reduce available seats
-        event.available_seats -= tickets
+        # Attach selected seats to booking
+        new_booking.seats.set(selected_seats)
+
+        # Mark seats as booked
+        selected_seats.update(
+            is_booked=True
+        )
+
+        # Update available seats
+        event.available_seats = Seat.objects.filter(
+            event=event,
+            is_booked=False
+        ).count()
+
         event.save()
 
         return redirect(
@@ -128,7 +152,8 @@ def booking(request, id):
         request,
         "booking/booking.html",
         {
-            "event": event
+            "event": event,
+            "seats": seats
         }
     )
 

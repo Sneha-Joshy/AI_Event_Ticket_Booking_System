@@ -10,7 +10,7 @@ Book Ticket
 
     <div class="row justify-content-center">
 
-        <div class="col-lg-8">
+        <div class="col-xl-10">
 
             <div class="booking-card shadow">
 
@@ -23,11 +23,11 @@ Book Ticket
                     </div>
 
                     <h2>
-                        Book Your Ticket
+                        Select Your Seats
                     </h2>
 
                     <p>
-                        Complete your booking for this event
+                        Choose your preferred seats for this event
                     </p>
 
                 </div>
@@ -36,186 +36,276 @@ Book Ticket
                 <div class="card-body p-4 p-md-5">
 
 
-                    
+                    <!-- Event Information -->
+
+                    <div class="event-info mb-4">
+
+                        <h4 class="fw-bold">
+                            {{ event.event_name }}
+                        </h4>
+
+                        <div class="row mt-3">
+
+                            <div class="col-md-6">
+
+                                <p>
+                                    📅
+                                    <strong>Date:</strong>
+                                    {{ event.date }}
+                                </p>
+
+                            </div>
 
 
-                    <form method="POST">
+                            <div class="col-md-6">
+
+                                <p>
+                                    ⏰
+                                    <strong>Time:</strong>
+                                    {{ event.time }}
+                                </p>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <p>
+                                    📍
+                                    <strong>Venue:</strong>
+                                    {{ event.venue }}
+                                </p>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <p>
+                                    💺
+                                    <strong>Available Seats:</strong>
+
+                                    <span class="text-success fw-bold">
+                                        {{ event.available_seats }}
+                                    </span>
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Customer Information -->
+
+                    <div class="customer-box mb-4">
+
+                        <h5 class="fw-bold mb-3">
+                            👤 Customer Details
+                        </h5>
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    Name
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    value="{{ request.user.get_full_name|default:request.user.username }}"
+                                    readonly>
+
+                            </div>
+
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    Email
+                                </label>
+
+                                <input
+                                    type="email"
+                                    class="form-control"
+                                    value="{{ request.user.email }}"
+                                    readonly>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Ticket Price -->
+
+                    <div class="price-display mb-4">
+
+                        🎟️
+
+                        <strong>
+                            ₹{{ event.ticket_price }}
+                        </strong>
+
+                        <span>
+                            per seat
+                        </span>
+
+                    </div>
+
+
+                    <!-- Seat Selection -->
+
+                    <div class="seat-section mb-4">
+
+                        <div class="text-center mb-4">
+
+                            <h4 class="fw-bold">
+                                Select Your Seats
+                            </h4>
+
+                            <p class="text-muted">
+                                Click on an available seat to select it.
+                            </p>
+
+                        </div>
+
+
+                        <!-- Stage -->
+
+                        <div class="stage">
+
+                            🎭 STAGE
+
+                        </div>
+
+
+                        <!-- Seats -->
+
+                        <div class="seat-container">
+
+                            {% for seat in seats %}
+
+                                <button
+                                    type="button"
+                                    class="seat
+                                    {% if seat.is_booked %}
+                                        booked
+                                    {% else %}
+                                        available
+                                    {% endif %}"
+                                    data-seat-id="{{ seat.id }}"
+                                    data-seat-number="{{ seat.seat_number }}"
+                                    {% if seat.is_booked %}
+                                        disabled
+                                    {% endif %}
+                                >
+
+                                    {{ seat.seat_number }}
+
+                                </button>
+
+                            {% endfor %}
+
+                        </div>
+
+
+                        <!-- Legend -->
+
+                        <div class="seat-legend">
+
+                            <div>
+                                <span class="legend-box available-box"></span>
+                                Available
+                            </div>
+
+                            <div>
+                                <span class="legend-box selected-box"></span>
+                                Selected
+                            </div>
+
+                            <div>
+                                <span class="legend-box booked-box"></span>
+                                Booked
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Booking Form -->
+
+                    <form method="POST" id="bookingForm">
 
                         {% csrf_token %}
 
 
-                        <!-- Event Information -->
+                        <!-- Selected seats will be added here -->
 
-                        <div class="event-info mb-4">
-
-                            <h4 class="fw-bold">
-                                {{ event.event_name }}
-                            </h4>
-
-                            <div class="row mt-3">
-
-                                <div class="col-md-6">
-
-                                    <p>
-                                        📅
-                                        <strong>Date:</strong>
-                                        {{ event.date }}
-                                    </p>
-
-                                </div>
+                        <div id="selectedSeatsContainer"></div>
 
 
-                                <div class="col-md-6">
+                        <!-- Booking Summary -->
 
-                                    <p>
-                                        ⏰
-                                        <strong>Time:</strong>
-                                        {{ event.time }}
-                                    </p>
-
-                                </div>
-
-
-                                <div class="col-md-6">
-
-                                    <p>
-                                        📍
-                                        <strong>Venue:</strong>
-                                        {{ event.venue }}
-                                    </p>
-
-                                </div>
-
-
-                                <div class="col-md-6">
-
-                                    <p>
-                                        💺
-                                        <strong>Available Seats:</strong>
-
-                                        <span class="text-success fw-bold">
-                                            {{ event.available_seats }}
-                                        </span>
-
-                                    </p>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- Customer Information -->
-
-                        <div class="customer-box mb-4">
-
-                            <h5 class="fw-bold mb-3">
-                                👤 Customer Details
-                            </h5>
-
-
-                            <div class="row">
-
-                                <div class="col-md-6 mb-3">
-
-                                    <label class="form-label">
-                                        Name
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        value="{{ request.user.get_full_name|default:request.user.username }}"
-                                        readonly>
-
-                                </div>
-
-
-                                <div class="col-md-6 mb-3">
-
-                                    <label class="form-label">
-                                        Email
-                                    </label>
-
-                                    <input
-                                        type="email"
-                                        class="form-control"
-                                        value="{{ request.user.email }}"
-                                        readonly>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- Ticket Price -->
-
-                        <div class="mb-4">
-
-                            <label class="form-label fw-bold">
-                                🎟️ Ticket Price
-                            </label>
-
-                            <div class="price-display">
-
-                                ₹<span id="ticketPrice">
-                                    {{ event.ticket_price }}
-                                </span>
-
-                                <small>
-                                    per ticket
-                                </small>
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- Number of Tickets -->
-
-                        <div class="mb-4">
-
-                            <label class="form-label fw-bold">
-                                Number of Tickets
-                            </label>
-
-                            <input
-                                type="number"
-                                name="tickets"
-                                id="tickets"
-                                class="form-control form-control-lg"
-                                min="1"
-                                max="{{ event.available_seats }}"
-                                value="1"
-                                required>
-
-                            <small class="text-muted">
-                                Maximum {{ event.available_seats }} ticket(s) available.
-                            </small>
-
-                        </div>
-
-
-                        <!-- Total Amount -->
-
-                        <div class="total-box mb-4">
+                        <div class="summary-box mb-4">
 
                             <div>
+
+                                <span>
+                                    Selected Seats
+                                </span>
+
+                                <strong id="selectedSeatsText">
+                                    None
+                                </strong>
+
+                            </div>
+
+
+                            <div>
+
+                                <span>
+                                    Number of Seats
+                                </span>
+
+                                <strong id="ticketCount">
+                                    0
+                                </strong>
+
+                            </div>
+
+
+                            <div>
+
+                                <span>
+                                    Price per Seat
+                                </span>
+
+                                <strong>
+                                    ₹{{ event.ticket_price }}
+                                </strong>
+
+                            </div>
+
+
+                            <hr>
+
+
+                            <div class="total-row">
 
                                 <span>
                                     Total Amount
                                 </span>
 
-                            </div>
-
-                            <div class="total-price">
-
-                                ₹<span id="totalAmount">
-                                    {{ event.ticket_price }}
-                                </span>
+                                <strong>
+                                    ₹<span id="totalAmount">0.00</span>
+                                </strong>
 
                             </div>
 
@@ -237,7 +327,9 @@ Book Ticket
 
                             <button
                                 type="submit"
-                                class="btn btn-warning btn-lg">
+                                id="paymentButton"
+                                class="btn btn-warning btn-lg"
+                                disabled>
 
                                 💳 Proceed to Payment
 
@@ -362,35 +454,242 @@ Book Ticket
 
 .price-display {
 
-    font-size: 24px;
-
-    font-weight: 700;
-
-    color: #198754;
-
     background: #f8f9fa;
 
-    padding: 15px;
+    padding: 18px;
 
     border-radius: 12px;
 
+    font-size: 20px;
+
+    color: #198754;
+
 }
 
 
-.price-display small {
-
-    font-size: 14px;
+.price-display span {
 
     color: #777;
 
-    font-weight: normal;
+    font-size: 14px;
 
 }
 
 
-/* Total */
+/* Seat Section */
 
-.total-box {
+.seat-section {
+
+    background: #f8f9fa;
+
+    padding: 30px 20px;
+
+    border-radius: 18px;
+
+}
+
+
+/* Stage */
+
+.stage {
+
+    width: 65%;
+
+    margin: 0 auto 35px;
+
+    padding: 12px;
+
+    text-align: center;
+
+    background: #343a40;
+
+    color: white;
+
+    border-radius: 50% 50% 10px 10px;
+
+    font-weight: bold;
+
+    letter-spacing: 2px;
+
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+
+}
+
+
+/* Seat Container */
+
+.seat-container {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(10, 42px);
+
+    gap: 10px;
+
+    justify-content: center;
+
+    max-height: 500px;
+
+    overflow-y: auto;
+
+    padding: 20px;
+
+}
+
+
+/* Seats */
+
+.seat {
+
+    width: 42px;
+
+    height: 42px;
+
+    border: none;
+
+    border-radius: 8px 8px 12px 12px;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    transition: 0.2s;
+
+}
+
+
+/* Available */
+
+.seat.available {
+
+    background: #198754;
+
+    color: white;
+
+    cursor: pointer;
+
+}
+
+
+.seat.available:hover {
+
+    transform: scale(1.1);
+
+    background: #157347;
+
+}
+
+
+/* Selected */
+
+.seat.selected {
+
+    background: #0d6efd;
+
+    color: white;
+
+    transform: scale(1.08);
+
+    box-shadow:
+        0 0 0 3px rgba(13,110,253,0.25);
+
+}
+
+
+/* Booked */
+
+.seat.booked {
+
+    background: #dc3545;
+
+    color: white;
+
+    cursor: not-allowed;
+
+    opacity: 0.8;
+
+}
+
+
+/* Legend */
+
+.seat-legend {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 25px;
+
+    flex-wrap: wrap;
+
+    margin-top: 25px;
+
+}
+
+
+.seat-legend div {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    font-size: 14px;
+
+}
+
+
+.legend-box {
+
+    width: 18px;
+
+    height: 18px;
+
+    border-radius: 4px;
+
+}
+
+
+.available-box {
+
+    background: #198754;
+
+}
+
+
+.selected-box {
+
+    background: #0d6efd;
+
+}
+
+
+.booked-box {
+
+    background: #dc3545;
+
+}
+
+
+/* Summary */
+
+.summary-box {
+
+    background: #212529;
+
+    color: white;
+
+    padding: 22px 25px;
+
+    border-radius: 15px;
+
+}
+
+
+.summary-box > div {
 
     display: flex;
 
@@ -398,31 +697,35 @@ Book Ticket
 
     align-items: center;
 
-    background: #212529;
-
-    color: white;
-
-    padding: 20px 25px;
-
-    border-radius: 15px;
+    padding: 7px 0;
 
 }
 
 
-.total-box span:first-child {
-
-    font-size: 18px;
-
-}
-
-
-.total-price {
-
-    font-size: 28px;
-
-    font-weight: bold;
+.summary-box strong {
 
     color: #ffc107;
+
+}
+
+
+.summary-box hr {
+
+    border-color: #6c757d;
+
+}
+
+
+.total-row {
+
+    font-size: 20px;
+
+}
+
+
+.total-row strong {
+
+    font-size: 28px;
 
 }
 
@@ -434,13 +737,6 @@ Book Ticket
     border-radius: 10px;
 
     padding: 12px;
-
-}
-
-
-.form-control:focus {
-
-    box-shadow: 0 0 0 3px rgba(102,16,242,0.15);
 
 }
 
@@ -457,44 +753,199 @@ Book Ticket
 
 }
 
+
+/* Mobile */
+
+@media (max-width: 768px) {
+
+    .seat-container {
+
+        grid-template-columns:
+            repeat(5, 42px);
+
+        gap: 8px;
+
+    }
+
+    .stage {
+
+        width: 90%;
+
+    }
+
+}
+
 </style>
 
 
 <script>
 
-const ticketsInput =
-    document.getElementById("tickets");
+const seats = document.querySelectorAll(".seat.available");
 
-const ticketPrice =
-    parseFloat(
-        document.getElementById("ticketPrice").innerText
+const selectedSeatsContainer =
+    document.getElementById(
+        "selectedSeatsContainer"
+    );
+
+const selectedSeatsText =
+    document.getElementById(
+        "selectedSeatsText"
+    );
+
+const ticketCount =
+    document.getElementById(
+        "ticketCount"
     );
 
 const totalAmount =
-    document.getElementById("totalAmount");
+    document.getElementById(
+        "totalAmount"
+    );
+
+const paymentButton =
+    document.getElementById(
+        "paymentButton"
+    );
 
 
-function calculateTotal() {
+const ticketPrice =
+    parseFloat(
+        "{{ event.ticket_price }}"
+    );
 
-    let tickets =
-        parseInt(ticketsInput.value) || 0;
 
-    let total =
-        ticketPrice * tickets;
+let selectedSeats = [];
+
+
+/* Seat Click */
+
+seats.forEach(function(seat) {
+
+    seat.addEventListener(
+        "click",
+        function() {
+
+            const seatId =
+                this.dataset.seatId;
+
+            const seatNumber =
+                this.dataset.seatNumber;
+
+
+            if (
+                selectedSeats.some(
+                    item => item.id === seatId
+                )
+            ) {
+
+                /* Remove seat */
+
+                selectedSeats =
+                    selectedSeats.filter(
+                        item => item.id !== seatId
+                    );
+
+                this.classList.remove(
+                    "selected"
+                );
+
+            } else {
+
+                /* Select seat */
+
+                selectedSeats.push({
+                    id: seatId,
+                    number: seatNumber
+                });
+
+                this.classList.add(
+                    "selected"
+                );
+
+            }
+
+
+            updateSummary();
+
+        }
+    );
+
+});
+
+
+function updateSummary() {
+
+    /* Selected seats text */
+
+    if (selectedSeats.length === 0) {
+
+        selectedSeatsText.innerText =
+            "None";
+
+    } else {
+
+        selectedSeatsText.innerText =
+            selectedSeats
+                .map(
+                    seat => seat.number
+                )
+                .join(", ");
+
+    }
+
+
+    /* Ticket count */
+
+    ticketCount.innerText =
+        selectedSeats.length;
+
+
+    /* Total */
+
+    const total =
+        selectedSeats.length *
+        ticketPrice;
 
     totalAmount.innerText =
         total.toFixed(2);
 
+
+    /* Enable / Disable payment */
+
+    paymentButton.disabled =
+        selectedSeats.length === 0;
+
+
+    /* Hidden fields */
+
+    selectedSeatsContainer.innerHTML =
+        "";
+
+
+    selectedSeats.forEach(
+        function(seat) {
+
+            const input =
+                document.createElement(
+                    "input"
+                );
+
+            input.type = "hidden";
+
+            input.name =
+                "selected_seats";
+
+            input.value =
+                seat.id;
+
+            selectedSeatsContainer.appendChild(
+                input
+            );
+
+        }
+    );
+
 }
-
-
-ticketsInput.addEventListener(
-    "input",
-    calculateTotal
-);
-
-
-calculateTotal();
 
 </script>
 

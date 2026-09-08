@@ -83,6 +83,27 @@ class Event(models.Model):
         return self.event_name
 
 
+# NEW MODEL
+class Seat(models.Model):
+
+    event = models.ForeignKey(
+        Event,
+        on_delete=models.CASCADE,
+        related_name="seats"
+    )
+
+    seat_number = models.CharField(
+        max_length=10
+    )
+
+    is_booked = models.BooleanField(
+        default=False
+    )
+
+    def __str__(self):
+        return f"{self.event.event_name} - {self.seat_number}"
+
+
 class Booking(models.Model):
 
     event = models.ForeignKey(
@@ -90,45 +111,33 @@ class Booking(models.Model):
         on_delete=models.CASCADE
     )
 
-    customer_name = models.CharField(max_length=100)
+    customer_name = models.CharField(
+        max_length=100
+    )
 
     customer_email = models.EmailField()
 
+    # Number of selected seats
     tickets = models.PositiveIntegerField()
+
+    # NEW
+    seats = models.ManyToManyField(
+        Seat,
+        related_name="bookings"
+    )
 
     total_amount = models.DecimalField(
         max_digits=10,
         decimal_places=2
     )
 
-    booking_date = models.DateTimeField(auto_now_add=True)
+    booking_date = models.DateTimeField(
+        auto_now_add=True
+    )
 
     def __str__(self):
         return f"{self.customer_name} - {self.event.event_name}"
 
-class ContactMessage(models.Model):
-
-    name = models.CharField(max_length=100)
-
-    email = models.EmailField()
-
-    subject = models.CharField(max_length=200)
-
-    message = models.TextField()
-
-    status = models.CharField(
-        max_length=20,
-        choices=[
-            ("Pending", "Pending"),
-            ("Resolved", "Resolved"),
-        ],
-        default="Pending"
-    )
-
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.name} - {self.subject}"    
 
 class ContactMessage(models.Model):
 
@@ -165,8 +174,7 @@ class ContactMessage(models.Model):
     )
 
     def __str__(self):
-        return f"{self.name} - {self.subject}" 
-
+        return f"{self.name} - {self.subject}"
 
 
 class Notification(models.Model):
@@ -187,6 +195,4 @@ class Notification(models.Model):
     )
 
     def __str__(self):
-        return f"{self.user.username} - {self.message[:30]}"   
-
-
+        return f"{self.user.username} - {self.message[:30]}"
