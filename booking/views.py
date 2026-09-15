@@ -721,7 +721,6 @@ def organizer_dashboard(request):
             "organizer": organizer
         }
     )
- 
 
 def add_event(request):
 
@@ -746,13 +745,14 @@ def add_event(request):
         contact_number = request.POST.get("contact_number")
 
         ticket_price = request.POST.get("ticket_price")
-        total_seats = request.POST.get("total_seats")
+        total_seats = int(request.POST.get("total_seats"))
 
         image = request.FILES.get("image")
 
         terms = request.POST.get("terms")
 
-        Event.objects.create(
+        # Create the event
+        event = Event.objects.create(
 
             organizer=organizer,
 
@@ -781,6 +781,17 @@ def add_event(request):
             status="Pending"
         )
 
+        # Create individual seats for the event
+        for i in range(total_seats):
+
+            row = chr(65 + (i // 100))
+            seat_number = (i % 100) + 1
+
+            Seat.objects.create(
+                event=event,
+                seat_number=f"{row}{seat_number}"
+            )
+
         messages.success(
             request,
             "Event submitted successfully. Waiting for admin approval."
@@ -791,7 +802,8 @@ def add_event(request):
     return render(
         request,
         "booking/add_event.html"
-    )
+    ) 
+
 
 @login_required
 def my_events(request):
@@ -1055,7 +1067,18 @@ def update_event_status(request, id, status):
     event = get_object_or_404(Event, id=id)
 
     if status in ["Approved", "Rejected"]:
+
+        admin_remarks = request.POST.get("admin_remarks", "").strip()
+
+        if not admin_remarks:
+            messages.error(
+                request,
+                "Please enter a reason before approving or rejecting the event."
+            )
+            return redirect("pending_events")
+
         event.status = status
+        event.admin_remarks = admin_remarks
         event.save()
 
         messages.success(
@@ -1063,7 +1086,7 @@ def update_event_status(request, id, status):
             f"Event '{event.event_name}' has been {status.lower()}."
         )
 
-    return redirect("pending_events")   
+    return redirect("pending_events") 
 
 def admin_login(request):
 

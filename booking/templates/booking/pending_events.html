@@ -6,7 +6,7 @@ Pending Events
 
 {% block content %}
 
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
 
     <h2 class="text-center mb-4">
         ⏳ Pending Events
@@ -30,6 +30,11 @@ Pending Events
                 <p>
                     <strong>Category:</strong>
                     {{ event.category }}
+                </p>
+
+                <p>
+                    <strong>Description:</strong>
+                    {{ event.description }}
                 </p>
 
                 <p>
@@ -58,6 +63,11 @@ Pending Events
                 </p>
 
                 <p>
+                    <strong>Booking Deadline:</strong>
+                    {{ event.booking_deadline }}
+                </p>
+
+                <p>
                     <strong>Status:</strong>
 
                     <span class="badge bg-warning text-dark">
@@ -66,32 +76,67 @@ Pending Events
 
                 </p>
 
+
                 {% if event.image %}
+
                 <img
                     src="{{ event.image.url }}"
                     style="width:250px;height:150px;object-fit:cover;"
-                    class="mb-3">
+                    class="mb-3 rounded">
+
                 {% endif %}
 
-                <div>
 
-                    <a
-                        href="{% url 'update_event_status' event.id 'Approved' %}"
-                        class="btn btn-success">
+                <hr>
 
-                        ✅ Approve
 
-                    </a>
+                <!-- Admin Decision Form -->
 
-                    <a
-                        href="{% url 'update_event_status' event.id 'Rejected' %}"
-                        class="btn btn-danger">
+                <form
+                    method="POST"
+                    action="{% url 'update_event_status' event.id 'Approved' %}"
+                >
 
-                        ❌ Reject
+                    {% csrf_token %}
 
-                    </a>
+                    <div class="mb-3">
 
-                </div>
+                        <label class="form-label">
+                            <strong>Admin Remarks / Reason</strong>
+                        </label>
+
+                        <textarea
+                            name="admin_remarks"
+                            class="form-control"
+                            rows="3"
+                            placeholder="Enter the reason for approving or rejecting this event..."
+                            required
+                        ></textarea>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-success me-2"
+                    >
+
+                        ✅ Approve Event
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        formaction="{% url 'update_event_status' event.id 'Rejected' %}"
+                        class="btn btn-danger"
+                    >
+
+                        ❌ Reject Event
+
+                    </button>
+
+                </form>
 
             </div>
 

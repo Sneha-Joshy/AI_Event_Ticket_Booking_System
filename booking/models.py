@@ -77,6 +77,11 @@ class Event(models.Model):
         default="Pending"
     )
 
+    admin_remarks = models.TextField(
+    null=True,
+    blank=True
+)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -137,7 +142,6 @@ class Booking(models.Model):
 
     def __str__(self):
         return f"{self.customer_name} - {self.event.event_name}"
-
 
 class ContactMessage(models.Model):
 
