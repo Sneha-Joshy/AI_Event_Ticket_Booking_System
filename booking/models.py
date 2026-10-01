@@ -28,10 +28,10 @@ class Event(models.Model):
     date = models.DateField()
     time = models.TimeField()
 
-    booking_deadline = models.DateField(
-        null=True,
+    booking_deadline = models.DateTimeField(
+        null=True, 
         blank=True
-    )
+        )
 
     event_type = models.CharField(
         max_length=20,

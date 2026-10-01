@@ -162,12 +162,21 @@ def event_details(request, id):
     return render(request, "booking/event_details.html", {
         "event": event
     })
-
-
 def index(request):
 
     featured_events = Event.objects.filter(
         status="Approved"
+    ).values(
+        "id",
+        "event_name",
+        "category",
+        "description",
+        "date",
+        "time",
+        "venue",
+        "ticket_price",
+        "available_seats",
+        "image"
     ).order_by("-created_at")[:3]
 
     return render(
@@ -294,8 +303,15 @@ def register_view(request):
         user_type = request.POST.get("user_type")
 
         username = request.POST.get("username")
+
+        first_name = request.POST.get("first_name")
+
+        last_name = request.POST.get("last_name")
+
         email = request.POST.get("email")
+
         password = request.POST.get("password")
+
         confirm_password = request.POST.get("confirm_password")
 
         # Check user type
@@ -397,10 +413,12 @@ def register_view(request):
 
         # CUSTOMER
         user = User.objects.create_user(
-            username=username,
-            email=email,
-            password=password
-        )
+    username=username,
+    first_name=first_name,
+    last_name=last_name,
+    email=email,
+    password=password
+)
 
         messages.success(
             request,
@@ -413,12 +431,23 @@ def register_view(request):
         request,
         "booking/register.html"
     )
+
+
 def events(request):
 
     category = request.GET.get("category")
 
     events = Event.objects.filter(
         status="Approved"
+    ).values(
+        "id",
+        "event_name",
+        "category",
+        "date",
+        "time",
+        "venue",
+        "ticket_price",
+        "image"
     )
 
     if category and category != "All":
@@ -639,6 +668,8 @@ def organizer_register(request):
 
         user = User.objects.create_user(
             username=username,
+            first_name=first_name,
+            last_name=last_name,
             email=email,
             password=password
         )
