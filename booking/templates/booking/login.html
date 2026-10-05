@@ -6,136 +6,176 @@ Login
 
 {% block content %}
 
+<!-- Bootstrap Icons -->
+<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+>
+
+
 <section class="login-section">
 
-<div class="login-box">
+    <div class="login-box">
 
-<h2>🎟️ Welcome Back</h2>
+        <h2>🎟️ Welcome Back</h2>
 
-<p>
-Login to book your favourite events
-</p>
+        <p>
+            Login to book your favourite events
+        </p>
 
-{% if error %}
+        {% if error %}
 
-<p style="color:red;">
-{{ error }}
-</p>
+        <p class="error-message">
+            {{ error }}
+        </p>
 
-{% endif %}
-
-<form method="POST">
-
-{% csrf_token %}
-
-<!-- USER TYPE -->
-
-<div class="mb-3">
-
-<label>
-Login As
-</label>
-
-<select
-    name="user_type"
-    class="form-control"
-    required>
-
-    <option value="">Select User Type</option>
-
-    <option value="customer">
-        Customer
-    </option>
-
-    <option value="organizer">
-        Organizer
-    </option>
-
-    <option value="admin">
-        Admin
-    </option>
-
-</select>
-
-</div>
+        {% endif %}
 
 
-<!-- USERNAME -->
+        <form method="POST">
 
-<div class="mb-3">
-
-<label>
-Username
-</label>
-
-<input
-type="text"
-name="username"
-class="form-control"
-placeholder="Enter username"
-required>
-
-</div>
+            {% csrf_token %}
 
 
-<!-- PASSWORD -->
+            <!-- USER TYPE -->
 
-<div class="mb-3">
+            <div class="mb-3">
 
-<label>
-Password
-</label>
+                <label>
+                    Login As
+                </label>
 
-<input
-type="password"
-name="password"
-class="form-control"
-placeholder="Enter password"
-required>
+                <select
+                    name="user_type"
+                    class="form-control"
+                    required
+                >
 
-</div>
+                    <option value="">
+                        Select User Type
+                    </option>
 
+                    <option value="customer">
+                        Customer
+                    </option>
 
-<button
-type="submit"
-class="btn btn-warning w-100">
+                    <option value="organizer">
+                        Organizer
+                    </option>
 
-Login
+                    <option value="admin">
+                        Admin
+                    </option>
 
-</button>
+                </select>
 
-</form>
-
-
-<p class="mt-3">
-
-Don't have an account?
-
-<a href="{% url 'register' %}">
-Register
-</a>
-
-</p>
+            </div>
 
 
-</div>
+            <!-- USERNAME -->
+
+            <div class="mb-3">
+
+                <label>
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    name="username"
+                    class="form-control"
+                    placeholder="Enter username"
+                    required
+                >
+
+            </div>
+
+
+            <!-- PASSWORD -->
+
+            <div class="mb-3">
+
+                <label>
+                    Password
+                </label>
+
+                <div class="password-wrapper">
+
+                    <input
+                        type="password"
+                        name="password"
+                        id="password"
+                        class="form-control"
+                        placeholder="Enter password"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        onclick="togglePassword()"
+                        aria-label="Show password"
+                    >
+
+                        <i
+                            class="bi bi-eye"
+                            id="eyeIcon"
+                        ></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- LOGIN BUTTON -->
+
+            <button
+                type="submit"
+                class="btn btn-warning w-100"
+            >
+
+                Login
+
+            </button>
+
+        </form>
+
+
+        <!-- REGISTER -->
+
+        <p class="mt-3">
+
+            Don't have an account?
+
+            <a href="{% url 'register' %}">
+                Register
+            </a>
+
+        </p>
+
+
+    </div>
 
 </section>
 
 
 <style>
 
-.login-section{
+/* LOGIN SECTION */
 
-min-height:80vh;
+.login-section {
 
-display:flex;
+    min-height: 80vh;
 
-justify-content:center;
+    display: flex;
 
-align-items:center;
+    justify-content: center;
 
-background: linear-gradient(
+    align-items: center;
+
+    background: linear-gradient(
         135deg,
         #d8d6e3,
         #b17fe7
@@ -144,58 +184,196 @@ background: linear-gradient(
 }
 
 
-.login-box{
+/* LOGIN BOX */
 
-width:400px;
+.login-box {
 
-background:white;
+    width: 400px;
 
-padding:35px;
+    background: white;
 
-border-radius:15px;
+    padding: 35px;
 
-box-shadow:0px 10px 25px rgba(0,0,0,0.2);
+    border-radius: 15px;
 
-}
-
-
-.login-box h2{
-
-text-align:center;
-
-font-weight:bold;
+    box-shadow:
+        0px 10px 25px
+        rgba(0, 0, 0, 0.2);
 
 }
 
 
-.login-box p{
+/* HEADING */
 
-text-align:center;
+.login-box h2 {
 
-color:#777;
+    text-align: center;
 
-}
-
-
-.form-control{
-
-padding:12px;
-
-border-radius:10px;
+    font-weight: bold;
 
 }
 
 
-.btn-warning{
+/* DESCRIPTION */
 
-padding:12px;
+.login-box p {
 
-font-weight:bold;
+    text-align: center;
 
-border-radius:10px;
+    color: #777;
+
+}
+
+
+/* ERROR MESSAGE */
+
+.login-box .error-message {
+
+    color: red;
+
+    font-weight: 500;
+
+}
+
+
+/* FORM LABEL */
+
+.login-box label {
+
+    display: block;
+
+    margin-bottom: 6px;
+
+    font-weight: 500;
+
+}
+
+
+/* INPUTS */
+
+.form-control {
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+}
+
+
+/* PASSWORD WRAPPER */
+
+.password-wrapper {
+
+    position: relative;
+
+}
+
+
+/* PASSWORD INPUT */
+
+.password-wrapper input {
+
+    padding-right: 45px;
+
+}
+
+
+/* EYE BUTTON */
+
+.password-toggle {
+
+    position: absolute;
+
+    right: 12px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    border: none;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    padding: 5px;
+
+    color: #666;
+
+    font-size: 18px;
+
+}
+
+
+/* EYE HOVER */
+
+.password-toggle:hover {
+
+    color: #000;
+
+}
+
+
+/* LOGIN BUTTON */
+
+.btn-warning {
+
+    padding: 12px;
+
+    font-weight: bold;
+
+    border-radius: 10px;
+
+}
+
+
+/* REGISTER LINK */
+
+.login-box a {
+
+    color: #0066ff;
 
 }
 
 </style>
+
+
+<!-- PASSWORD SHOW / HIDE -->
+
+<script>
+
+function togglePassword() {
+
+    const password =
+        document.getElementById("password");
+
+    const eyeIcon =
+        document.getElementById("eyeIcon");
+
+
+    if (password.type === "password") {
+
+        password.type = "text";
+
+        eyeIcon.classList.remove("bi-eye");
+
+        eyeIcon.classList.add("bi-eye-slash");
+
+    }
+
+    else {
+
+        password.type = "password";
+
+        eyeIcon.classList.remove("bi-eye-slash");
+
+        eyeIcon.classList.add("bi-eye");
+
+    }
+
+}
+
+</script>
+
 
 {% endblock %}

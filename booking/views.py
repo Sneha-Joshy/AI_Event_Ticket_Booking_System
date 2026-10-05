@@ -7,6 +7,12 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
+
+from django.shortcuts import render, get_object_or_404
+from django.db.models import Q
+
+
+
 from .models import Event, Booking, Organizer
 from django.contrib.auth.decorators import login_required
 
@@ -26,6 +32,7 @@ from .models import *
 
 from django.core.mail import send_mail
 from django.conf import settings
+
 
 
 client = genai.Client()
@@ -98,7 +105,7 @@ def booking(request, id):
             is_booked=False
         )
 
-        # Make sure all requested seats are actually available
+        # Make sure all requested seats are available
         if selected_seats.count() != len(selected_seat_ids):
 
             messages.error(
@@ -144,28 +151,23 @@ def booking(request, id):
         event.save()
 
         return redirect(
-            "payment",
-            id=new_booking.id
-        )
-
-    return render(
-        request,
-        "booking/booking.html",
-        {
-            "event": event,
-            "seats": seats
-        }
-    )
-
+    "payment",
+    id=new_booking.id
+)
 def event_details(request, id):
     event = get_object_or_404(Event, id=id)
     return render(request, "booking/event_details.html", {
         "event": event
     })
+from django.utils import timezone
+
 def index(request):
 
+    today = timezone.localdate()
+
     featured_events = Event.objects.filter(
-        status="Approved"
+        status="Approved",
+        date__gte=today
     ).values(
         "id",
         "event_name",
@@ -177,7 +179,7 @@ def index(request):
         "ticket_price",
         "available_seats",
         "image"
-    ).order_by("-created_at")[:3]
+    ).order_by("date", "time")[:3]
 
     return render(
         request,
@@ -433,12 +435,21 @@ def register_view(request):
     )
 
 
+from django.utils import timezone
+from django.db.models import Q
+
+
 def events(request):
 
     category = request.GET.get("category")
 
+    now = timezone.localtime()
+
     events = Event.objects.filter(
         status="Approved"
+    ).filter(
+        Q(date__gt=now.date()) |
+        Q(date=now.date(), time__gte=now.time())
     ).values(
         "id",
         "event_name",
@@ -476,22 +487,43 @@ def payment(request, id):
 
     if request.method == "POST":
 
-        # Send booking confirmation email
-        send_mail(
-            subject="Booking Confirmation - AI Event Booking",
-            message=f"""
+        # ------------------------------------------
+        # PAYMENT SUCCESS
+        # ------------------------------------------
+
+        # Your current project treats POST as
+        # successful payment.
+        payment_success = True
+
+        if payment_success:
+
+            # --------------------------------------
+            # SEND CONFIRMATION EMAIL
+            # --------------------------------------
+
+            send_mail(
+                subject="Booking Confirmation - AI Event Booking",
+
+                message=f"""
 Dear {booking.customer_name},
 
 Your event ticket booking has been confirmed successfully.
 
 Booking Details
 ----------------------------
+
 Booking ID: #{booking.id}
+
 Event: {booking.event.event_name}
+
 Date: {booking.event.date}
+
 Time: {booking.event.time}
+
 Venue: {booking.event.venue}
+
 Number of Tickets: {booking.tickets}
+
 Total Amount: Rs. {booking.total_amount}
 
 Thank you for using the AI-Powered Event Ticket Booking System.
@@ -501,20 +533,25 @@ Please keep your digital ticket with you for the event.
 Regards,
 AI Event Booking Team
 """,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[booking.customer_email],
-            fail_silently=False,
-        )
 
-        messages.success(
-            request,
-            "Payment successful! Booking confirmation email sent."
-        )
+                from_email=None,
 
-        return redirect(
-            "success",
-            id=booking.id
-        )
+                recipient_list=[
+                    booking.customer_email
+                ],
+
+                fail_silently=False,
+            )
+
+            messages.success(
+                request,
+                "Payment successful! Booking confirmation email sent."
+            )
+
+            return redirect(
+                "success",
+                id=booking.id
+            )
 
     return render(
         request,
@@ -523,8 +560,6 @@ AI Event Booking Team
             "booking": booking
         }
     )
-
-@login_required
 def success(request, id):
 
     booking = get_object_or_404(
