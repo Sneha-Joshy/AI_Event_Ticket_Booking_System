@@ -1,0 +1,70 @@
+{% extends 'booking/base.html' %}
+
+{% block title %}
+Cancel Booking
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="card shadow mx-auto text-center"
+         style="max-width: 600px; border-radius: 20px;">
+
+        <div class="card-body p-5">
+
+            <div style="font-size: 60px;">
+                ⚠️
+            </div>
+
+            <h2 class="fw-bold mt-3">
+                Cancel Booking?
+            </h2>
+
+            <p class="text-muted mt-3">
+                Are you sure you want to cancel your booking for:
+            </p>
+
+            <h4 class="fw-bold">
+                {{ booking.event.event_name }}
+            </h4>
+
+            <p class="mt-3">
+                📅 {{ booking.event.date }}<br>
+                ⏰ {{ booking.event.time }}<br>
+                🎟️ {{ booking.tickets }} ticket(s)
+            </p>
+
+            <p class="text-danger">
+                This action will release your selected seats.
+            </p>
+
+            <form method="POST" class="mt-4">
+
+                {% csrf_token %}
+
+                <button
+                    type="submit"
+                    class="btn btn-danger me-2">
+
+                    Yes, Cancel Booking
+
+                </button>
+
+                <a
+                    href="{% url 'my_bookings' %}"
+                    class="btn btn-secondary">
+
+                    Keep Booking
+
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

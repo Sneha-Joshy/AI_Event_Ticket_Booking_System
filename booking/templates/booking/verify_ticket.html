@@ -1,0 +1,128 @@
+{% extends "booking/base.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="card shadow p-4 mx-auto"
+         style="max-width: 600px;">
+
+        <div class="text-center mb-4">
+
+            {% if valid %}
+
+                <h2 class="text-success">
+                    ✓ Valid Ticket
+                </h2>
+
+                <p class="text-muted">
+                    This ticket is valid and ready for entry.
+                </p>
+
+            {% elif used_successfully %}
+
+                <h2 class="text-success">
+                    ✓ Entry Confirmed
+                </h2>
+
+                <p class="text-muted">
+                    The ticket has been successfully marked as used.
+                </p>
+
+            {% else %}
+
+                <h2 class="text-danger">
+                    ✗ Invalid Ticket
+                </h2>
+
+                <p class="text-muted">
+                    {{ message }}
+                </p>
+
+            {% endif %}
+
+        </div>
+
+
+        <hr>
+
+
+        <h5 class="mb-3">
+            Ticket Details
+        </h5>
+
+        <p>
+            <strong>Booking ID:</strong>
+            #{{ booking.id }}
+        </p>
+
+        <p>
+            <strong>Customer:</strong>
+            {{ booking.customer_name }}
+        </p>
+
+        <p>
+            <strong>Email:</strong>
+            {{ booking.customer_email }}
+        </p>
+
+        <p>
+            <strong>Event:</strong>
+            {{ booking.event.event_name }}
+        </p>
+
+        <p>
+            <strong>Date:</strong>
+            {{ booking.event.date }}
+        </p>
+
+        <p>
+            <strong>Time:</strong>
+            {{ booking.event.time }}
+        </p>
+
+        <p>
+            <strong>Venue:</strong>
+            {{ booking.event.venue }}
+        </p>
+
+        <p>
+            <strong>Tickets:</strong>
+            {{ booking.tickets }}
+        </p>
+
+        <p>
+            <strong>Total Amount:</strong>
+            ₹{{ booking.total_amount }}
+        </p>
+
+
+        {% if valid %}
+
+            <form method="POST" class="text-center mt-4">
+
+                {% csrf_token %}
+
+                <button type="submit"
+                        class="btn btn-success btn-lg">
+                    ✓ Confirm Entry
+                </button>
+
+            </form>
+
+        {% endif %}
+
+
+        {% if used_successfully %}
+
+            <div class="alert alert-success text-center mt-4">
+                Entry has been successfully confirmed.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

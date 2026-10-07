@@ -41,7 +41,7 @@ urlpatterns = [
 
     path('my-bookings/', views.my_bookings, name='my_bookings'),
 
-    path("organizer/register/", views.organizer_register, name="organizer_register"),
+   
 
     path("organizer/login/", views.organizer_login, name="organizer_login"),
 
@@ -153,6 +153,16 @@ urlpatterns = [
     "recommendations/",
     views.recommendations,
     name="recommendations"
+),
+    path(
+    "cancel-booking/<int:id>/",
+    views.cancel_booking,
+    name="cancel_booking"
+),
+    path(
+    "verify-ticket/<uuid:ticket_code>/",
+    views.verify_ticket,
+    name="verify_ticket"
 ),
 
 ]

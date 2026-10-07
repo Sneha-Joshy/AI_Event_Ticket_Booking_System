@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+import uuid
 
 class Organizer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -108,7 +108,6 @@ class Seat(models.Model):
     def __str__(self):
         return f"{self.event.event_name} - {self.seat_number}"
 
-
 class Booking(models.Model):
 
     event = models.ForeignKey(
@@ -125,7 +124,7 @@ class Booking(models.Model):
     # Number of selected seats
     tickets = models.PositiveIntegerField()
 
-    # NEW
+    # Selected seats
     seats = models.ManyToManyField(
         Seat,
         related_name="bookings"
@@ -138,6 +137,37 @@ class Booking(models.Model):
 
     booking_date = models.DateTimeField(
         auto_now_add=True
+    )
+
+    # Booking status
+    STATUS_CHOICES = [
+        ("Confirmed", "Confirmed"),
+        ("Cancelled", "Cancelled"),
+    ]
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="Confirmed"
+    )
+
+    # QR code
+    qr_code = models.ImageField(
+        upload_to="qr_codes/",
+        null=True,
+        blank=True
+    )
+
+    # Unique ticket code
+    ticket_code = models.UUIDField(
+        default=uuid.uuid4,
+        unique=True,
+        editable=False
+    )
+
+    # Ticket verification
+    ticket_used = models.BooleanField(
+        default=False
     )
 
     def __str__(self):
@@ -200,3 +230,4 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.message[:30]}"
+

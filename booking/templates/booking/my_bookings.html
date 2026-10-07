@@ -66,16 +66,25 @@ My Bookings
                         <div class="d-flex justify-content-between align-items-center">
 
                             <h3 class="card-title fw-bold">
-
                                 {{ booking.event.event_name }}
-
                             </h3>
 
-                            <span class="badge bg-success fs-6">
 
-                                Confirmed
+                            <!-- Booking Status -->
 
-                            </span>
+                            {% if booking.status == "Confirmed" %}
+
+                                <span class="badge bg-success fs-6">
+                                    Confirmed
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-secondary fs-6">
+                                    Cancelled
+                                </span>
+
+                            {% endif %}
 
                         </div>
 
@@ -83,12 +92,13 @@ My Bookings
                         <hr>
 
 
+                        <!-- Booking Details -->
+
                         <div class="booking-details">
 
                             <p>
                                 📅
                                 <strong>Date:</strong>
-
                                 {{ booking.event.date }}
                             </p>
 
@@ -96,7 +106,6 @@ My Bookings
                             <p>
                                 ⏰
                                 <strong>Time:</strong>
-
                                 {{ booking.event.time }}
                             </p>
 
@@ -104,7 +113,6 @@ My Bookings
                             <p>
                                 📍
                                 <strong>Venue:</strong>
-
                                 {{ booking.event.venue }}
                             </p>
 
@@ -112,7 +120,6 @@ My Bookings
                             <p>
                                 🎟️
                                 <strong>Tickets:</strong>
-
                                 {{ booking.tickets }}
                             </p>
 
@@ -120,7 +127,6 @@ My Bookings
                             <p>
                                 💰
                                 <strong>Total Amount:</strong>
-
                                 ₹{{ booking.total_amount }}
                             </p>
 
@@ -128,7 +134,6 @@ My Bookings
                             <p>
                                 🧾
                                 <strong>Booking Date:</strong>
-
                                 {{ booking.booking_date|date:"d M Y, h:i A" }}
                             </p>
 
@@ -139,19 +144,41 @@ My Bookings
 
                         <div class="mt-4">
 
+                            {% if booking.status == "Cancelled" %}
 
-                            <a href="{% url 'view_ticket' booking.id %}" class="btn btn-primary">
-    🎟️ View Ticket
-</a>
+                                <!-- Cancelled Booking -->
+
+                                <button
+                                    type="button"
+                                    class="btn btn-primary"
+                                    onclick="alert('This booking has been cancelled. The ticket is no longer valid.');">
+
+                                    🎟️ View Ticket
+
+                                </button>
+
+                            {% else %}
+
+                                <!-- Confirmed Booking -->
+
+                                <a
+                                    href="{% url 'view_ticket' booking.id %}"
+                                    class="btn btn-primary">
+
+                                    🎟️ View Ticket
+
+                                </a>
 
 
-                            <a
-                                href="#"
-                                class="btn btn-outline-danger">
+                                <a
+                                    href="{% url 'cancel_booking' booking.id %}"
+                                    class="btn btn-outline-danger">
 
-                                Cancel Booking
+                                    Cancel Booking
 
-                            </a>
+                                </a>
+
+                            {% endif %}
 
                         </div>
 
@@ -182,9 +209,7 @@ My Bookings
             </h3>
 
             <p class="text-muted">
-
                 You haven't booked any events yet.
-
             </p>
 
 

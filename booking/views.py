@@ -6,14 +6,18 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-
+from django.core.files import File
+from django.urls import reverse
 
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 
 
 
-from .models import Event, Booking, Organizer
+
+
+
+from .models import Booking, Event, Seat, Organizer
 from django.contrib.auth.decorators import login_required
 
 from django.http import HttpResponse, JsonResponse
@@ -33,7 +37,10 @@ from .models import *
 from django.core.mail import send_mail
 from django.conf import settings
 
+from reportlab.pdfgen import canvas
 
+
+from django.http import HttpResponse
 
 client = genai.Client()
 
@@ -57,7 +64,7 @@ def booking(request, id):
     # Check booking deadline
     if (
         event.booking_deadline
-        and timezone.now().date() > event.booking_deadline
+        and timezone.now() > event.booking_deadline
     ):
         messages.error(
             request,
@@ -151,9 +158,17 @@ def booking(request, id):
         event.save()
 
         return redirect(
-    "payment",
-    id=new_booking.id
-)
+            "payment",
+            id=new_booking.id
+        )
+    return render(
+     request,
+        "booking/booking.html",
+        {
+            "event": event,
+            "seats": seats
+        }
+    )
 def event_details(request, id):
     event = get_object_or_404(Event, id=id)
     return render(request, "booking/event_details.html", {
@@ -305,15 +320,10 @@ def register_view(request):
         user_type = request.POST.get("user_type")
 
         username = request.POST.get("username")
-
         first_name = request.POST.get("first_name")
-
         last_name = request.POST.get("last_name")
-
         email = request.POST.get("email")
-
         password = request.POST.get("password")
-
         confirm_password = request.POST.get("confirm_password")
 
         # Check user type
@@ -394,7 +404,7 @@ def register_view(request):
             )
 
         # Special character
-        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
 
             return render(
                 request,
@@ -404,23 +414,49 @@ def register_view(request):
                 }
             )
 
-        # ORGANIZER
-        # Do NOT create User here.
-        # Send organizer to the organizer registration page.
+        # ==========================================
+        # ORGANIZER REGISTRATION
+        # ==========================================
 
         if user_type == "organizer":
 
-            return redirect("organizer_register")
+            organization_name = request.POST.get("organization_name")
+            phone_number = request.POST.get("phone_number")
+            address = request.POST.get("address")
 
+            user = User.objects.create_user(
+                username=username,
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                password=password
+            )
 
-        # CUSTOMER
+            Organizer.objects.create(
+                user=user,
+                organization_name=organization_name,
+                phone=phone_number,
+                address=address
+            )
+
+            messages.success(
+                request,
+                "Organizer registration successful. Please login."
+            )
+
+            return redirect("login")
+
+        # ==========================================
+        # CUSTOMER REGISTRATION
+        # ==========================================
+
         user = User.objects.create_user(
-    username=username,
-    first_name=first_name,
-    last_name=last_name,
-    email=email,
-    password=password
-)
+            username=username,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            password=password
+        )
 
         messages.success(
             request,
@@ -433,8 +469,6 @@ def register_view(request):
         request,
         "booking/register.html"
     )
-
-
 from django.utils import timezone
 from django.db.models import Q
 
@@ -491,11 +525,46 @@ def payment(request, id):
         # PAYMENT SUCCESS
         # ------------------------------------------
 
-        # Your current project treats POST as
-        # successful payment.
         payment_success = True
 
         if payment_success:
+
+            # --------------------------------------
+            # GENERATE QR CODE
+            # --------------------------------------
+
+            qr_data = request.build_absolute_uri(
+                reverse(
+                    "verify_ticket",
+                    args=[booking.ticket_code]
+                )
+            )
+
+            qr = qrcode.QRCode(
+                error_correction=qrcode.constants.ERROR_CORRECT_M,
+                box_size=12,
+                border=4
+            )
+
+            qr.add_data(qr_data)
+            qr.make(fit=True)
+
+            qr_image = qr.make_image()
+
+            qr_buffer = BytesIO()
+
+            qr_image.save(
+                qr_buffer,
+                format="PNG"
+            )
+
+            qr_buffer.seek(0)
+
+            booking.qr_code.save(
+                f"booking_{booking.id}.png",
+                File(qr_buffer),
+                save=True
+            )
 
             # --------------------------------------
             # SEND CONFIRMATION EMAIL
@@ -553,6 +622,10 @@ AI Event Booking Team
                 id=booking.id
             )
 
+    # --------------------------------------
+    # DISPLAY PAYMENT PAGE
+    # --------------------------------------
+
     return render(
         request,
         "booking/payment.html",
@@ -560,6 +633,7 @@ AI Event Booking Team
             "booking": booking
         }
     )
+
 def success(request, id):
 
     booking = get_object_or_404(
@@ -642,89 +716,141 @@ def profile(request):
 @login_required
 def my_bookings(request):
 
+    today = timezone.localdate()
+
     bookings = Booking.objects.filter(
-        customer_email=request.user.email
+        customer_email=request.user.email,
+        event__date__gte=today
     ).order_by("-booking_date")
 
     return render(
         request,
         "booking/my_bookings.html",
-        {
-            "bookings": bookings
-        }
+        {"bookings": bookings}
     )
 
-def organizer_register(request):
+@login_required
+def cancel_booking(request, id):
+
+    booking = get_object_or_404(
+        Booking,
+        id=id,
+        customer_email=request.user.email
+    )
+
+    # Only allow cancellation of confirmed bookings
+    if booking.status == "Cancelled":
+        messages.error(
+            request,
+            "This booking has already been cancelled."
+        )
+        return redirect("my_bookings")
+
+    # Do not allow cancellation after ticket has been used
+    if booking.ticket_used:
+        messages.error(
+            request,
+            "This ticket has already been used and cannot be cancelled."
+        )
+        return redirect("my_bookings")
+
+    # Check cancellation deadline
+    if timezone.now().date() >= booking.event.date:
+        messages.error(
+            request,
+            "This booking cannot be cancelled on or after the event date."
+        )
+        return redirect("my_bookings")
 
     if request.method == "POST":
 
-        organization_name = request.POST.get("organization_name")
-        username = request.POST.get("username")
-        email = request.POST.get("email")
-        phone = request.POST.get("phone")
-        address = request.POST.get("address")
-        password = request.POST.get("password")
-        confirm_password = request.POST.get("confirm_password")
-
-        if User.objects.filter(username=username).exists():
-            return render(request, "booking/organizer_register.html", {
-                "error": "Username already exists."
-            })
-
-        if password != confirm_password:
-            return render(request, "booking/organizer_register.html", {
-                "error": "Passwords do not match."
-            })
-
-        if len(password) < 8:
-            return render(request, "booking/organizer_register.html", {
-                "error": "Password must be at least 8 characters long."
-            })
-
-        if not re.search(r"[A-Z]", password):
-            return render(request, "booking/organizer_register.html", {
-                "error": "Password must contain at least one uppercase letter."
-            })
-
-        if not re.search(r"[a-z]", password):
-            return render(request, "booking/organizer_register.html", {
-                "error": "Password must contain at least one lowercase letter."
-            })
-
-        if not re.search(r"\d", password):
-            return render(request, "booking/organizer_register.html", {
-                "error": "Password must contain at least one number."
-            })
-
-        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
-            return render(request, "booking/organizer_register.html", {
-                "error": "Password must contain at least one special character."
-            })
-
-        user = User.objects.create_user(
-            username=username,
-            first_name=first_name,
-            last_name=last_name,
-            email=email,
-            password=password
+        # Release the selected seats
+        booking.seats.update(
+            is_booked=False
         )
 
-        Organizer.objects.create(
-            user=user,
-            organization_name=organization_name,
-            phone=phone,
-            address=address
+        # Update available seats
+        booking.event.available_seats = Seat.objects.filter(
+            event=booking.event,
+            is_booked=False
+        ).count()
+
+        booking.event.save(
+            update_fields=["available_seats"]
+        )
+
+        # Change booking status
+        booking.status = "Cancelled"
+
+        booking.save(
+            update_fields=["status"]
+        )
+
+        # Get seat numbers before sending email
+        seat_numbers = ", ".join(
+            booking.seats.values_list(
+                "seat_number",
+                flat=True
+            )
+        )
+
+        # SEND CANCELLATION EMAIL
+        send_mail(
+            subject="Booking Cancellation Confirmation - AI Event Booking",
+
+            message=f"""
+Dear {booking.customer_name},
+
+Your event ticket booking has been cancelled successfully.
+
+Cancellation Details
+----------------------------
+
+Booking ID: #{booking.id}
+
+Event: {booking.event.event_name}
+
+Date: {booking.event.date}
+
+Time: {booking.event.time}
+
+Venue: {booking.event.venue}
+
+Number of Tickets: {booking.tickets}
+
+Seat Number(s): {seat_numbers}
+
+Total Amount: Rs. {booking.total_amount}
+
+Booking Status: CANCELLED
+
+Your selected seats have been released and are now available for other customers.
+
+Thank you for using the AI-Powered Event Ticket Booking System.
+
+Regards,
+AI Event Booking Team
+""",
+
+            from_email=None,
+            recipient_list=[booking.customer_email],
+            fail_silently=False,
         )
 
         messages.success(
             request,
-            "Organizer registered successfully. Please login."
+            "Booking cancelled successfully. Cancellation email sent."
         )
 
-        return redirect("organizer_login")
+        return redirect("my_bookings")
 
-    return render(request, "booking/organizer_register.html")
-
+    return render(
+        request,
+        "booking/cancel_booking.html",
+        {
+            "booking": booking
+        }
+    )
 
 
 
@@ -1185,7 +1311,92 @@ def admin_login(request):
         request,
         "booking/admin_login.html"
     )
+@login_required
+def verify_ticket(request, ticket_code):
 
+    # Only organizers can verify tickets
+    organizer = Organizer.objects.filter(
+        user=request.user
+    ).first()
+
+    if not organizer:
+        messages.error(
+            request,
+            "Only organizers can verify tickets."
+        )
+        return redirect("events")
+
+    # Find booking using unique ticket code
+    booking = get_object_or_404(
+        Booking,
+        ticket_code=ticket_code
+    )
+
+    # Check whether this organizer owns the event
+    if booking.event.organizer_id != organizer.id:
+        return render(
+            request,
+            "booking/verify_ticket.html",
+            {
+                "booking": booking,
+                "valid": False,
+                "message": "You are not authorized to verify this ticket."
+            }
+        )
+
+    # Check whether booking has been cancelled
+    if booking.status == "Cancelled":
+        return render(
+            request,
+            "booking/verify_ticket.html",
+            {
+                "booking": booking,
+                "valid": False,
+                "message": "This ticket has been cancelled and is no longer valid."
+            }
+        )
+
+    # Check whether ticket has already been used
+    if booking.ticket_used:
+        return render(
+            request,
+            "booking/verify_ticket.html",
+            {
+                "booking": booking,
+                "valid": False,
+                "message": "This ticket has already been used."
+            }
+        )
+
+    # Organizer confirms entry
+    if request.method == "POST":
+
+        booking.ticket_used = True
+
+        booking.save(
+            update_fields=["ticket_used"]
+        )
+
+        return render(
+            request,
+            "booking/verify_ticket.html",
+            {
+                "booking": booking,
+                "valid": False,
+                "used_successfully": True,
+                "message": "Entry confirmed successfully."
+            }
+        )
+
+    # Ticket is valid
+    return render(
+        request,
+        "booking/verify_ticket.html",
+        {
+            "booking": booking,
+            "valid": True
+        }
+    )
 @login_required
 def view_ticket(request, id):
 
@@ -1195,14 +1406,27 @@ def view_ticket(request, id):
         customer_email=request.user.email
     )
 
-    qr_data = (
-        f"Booking ID: {booking.id}\n"
-        f"Customer: {booking.customer_name}\n"
-        f"Event: {booking.event.event_name}\n"
-        f"Date: {booking.event.date}\n"
-        f"Tickets: {booking.tickets}"
-    )
+    if booking.status == "Cancelled":
+        messages.error(
+            request,
+            "This booking has been cancelled. The ticket is no longer valid."
+        )
+        return redirect("my_bookings")
 
+    # Your existing QR code code stays here
+
+    seat_numbers = ", ".join(
+    booking.seats.values_list("seat_number", flat=True)
+)
+
+    qr_data = (
+            f"Booking ID: {booking.id}\n"
+            f"Customer: {booking.customer_name}\n"
+           f"Event: {booking.event.event_name}\n"
+            f"Date: {booking.event.date}\n"
+           f"Tickets: {booking.tickets}\n"
+           f"Seat Number: {seat_numbers}"
+    )
     qr = qrcode.make(qr_data)
 
     buffer = BytesIO()
@@ -1230,6 +1454,21 @@ def download_ticket_pdf(request, id):
         customer_email=request.user.email
     )
 
+    # --------------------------------------
+    # DO NOT ALLOW CANCELLED TICKET
+    # --------------------------------------
+
+    if booking.status == "Cancelled":
+        messages.error(
+            request,
+            "This booking has been cancelled. The ticket is no longer valid."
+        )
+        return redirect("my_bookings")
+
+    # --------------------------------------
+    # CREATE PDF RESPONSE
+    # --------------------------------------
+
     response = HttpResponse(
         content_type="application/pdf"
     )
@@ -1245,14 +1484,26 @@ def download_ticket_pdf(request, id):
 
     width, height = A4
 
-    pdf.setFont("Helvetica-Bold", 24)
+    # --------------------------------------
+    # TITLE
+    # --------------------------------------
+
+    pdf.setFont(
+        "Helvetica-Bold",
+        24
+    )
+
     pdf.drawCentredString(
         width / 2,
         height - 70,
         "AI Event Booking"
     )
 
-    pdf.setFont("Helvetica-Bold", 20)
+    pdf.setFont(
+        "Helvetica-Bold",
+        20
+    )
+
     pdf.drawCentredString(
         width / 2,
         height - 110,
@@ -1266,45 +1517,113 @@ def download_ticket_pdf(request, id):
         height - 130
     )
 
-    pdf.setFont("Helvetica-Bold", 16)
+    # --------------------------------------
+    # EVENT NAME
+    # --------------------------------------
+
+    pdf.setFont(
+        "Helvetica-Bold",
+        16
+    )
+
     pdf.drawString(
         60,
         height - 175,
         booking.event.event_name
     )
 
-    pdf.setFont("Helvetica", 12)
+    pdf.setFont(
+        "Helvetica",
+        12
+    )
 
     y = height - 220
 
-    pdf.drawString(60, y, f"Booking ID: #{booking.id}")
+    # --------------------------------------
+    # BOOKING DETAILS
+    # --------------------------------------
+
+    pdf.drawString(
+        60,
+        y,
+        f"Booking ID: #{booking.id}"
+    )
     y -= 30
 
-    pdf.drawString(60, y, f"Customer: {booking.customer_name}")
+    pdf.drawString(
+        60,
+        y,
+        f"Customer: {booking.customer_name}"
+    )
     y -= 30
 
-    pdf.drawString(60, y, f"Email: {booking.customer_email}")
+    pdf.drawString(
+        60,
+        y,
+        f"Email: {booking.customer_email}"
+    )
     y -= 30
 
-    pdf.drawString(60, y, f"Date: {booking.event.date}")
+    pdf.drawString(
+        60,
+        y,
+        f"Date: {booking.event.date}"
+    )
     y -= 30
 
-    pdf.drawString(60, y, f"Time: {booking.event.time}")
+    pdf.drawString(
+        60,
+        y,
+        f"Time: {booking.event.time}"
+    )
     y -= 30
 
-    pdf.drawString(60, y, f"Venue: {booking.event.venue}")
+    pdf.drawString(
+        60,
+        y,
+        f"Venue: {booking.event.venue}"
+    )
     y -= 30
 
-    pdf.drawString(60, y, f"Tickets: {booking.tickets}")
+    pdf.drawString(
+        60,
+        y,
+        f"Tickets: {booking.tickets}"
+    )
     y -= 30
+
+    # --------------------------------------
+    # SEAT NUMBERS
+    # --------------------------------------
+
+    seat_numbers = ", ".join(
+        booking.seats.values_list(
+            "seat_number",
+            flat=True
+        )
+    )
+
+    pdf.drawString(
+        60,
+        y,
+        f"Seat Number: {seat_numbers}"
+    )
+    y -= 30
+
+    # --------------------------------------
+    # TOTAL AMOUNT
+    # --------------------------------------
 
     pdf.drawString(
         60,
         y,
         f"Total Amount: Rs. {booking.total_amount}"
     )
-
     y -= 30
+
+    # --------------------------------------
+    # BOOKING DATE
+    # --------------------------------------
 
     pdf.drawString(
         60,
@@ -1314,7 +1633,14 @@ def download_ticket_pdf(request, id):
 
     y -= 60
 
-    pdf.setFont("Helvetica-Bold", 14)
+    # --------------------------------------
+    # STATUS
+    # --------------------------------------
+
+    pdf.setFont(
+        "Helvetica-Bold",
+        14
+    )
 
     pdf.drawString(
         60,
@@ -1322,13 +1648,73 @@ def download_ticket_pdf(request, id):
         "Status: CONFIRMED"
     )
 
-    pdf.setFont("Helvetica", 10)
+    # --------------------------------------
+    # SAME QR CODE AS DIGITAL TICKET
+    # --------------------------------------
+
+    qr_data = (
+        f"Booking ID: {booking.id}\n"
+        f"Customer: {booking.customer_name}\n"
+        f"Event: {booking.event.event_name}\n"
+        f"Date: {booking.event.date}\n"
+        f"Tickets: {booking.tickets}\n"
+        f"Seat Number: {seat_numbers}"
+    )
+
+    qr = qrcode.make(qr_data)
+
+    qr_buffer = BytesIO()
+
+    qr.save(
+        qr_buffer,
+        format="PNG"
+    )
+
+    qr_buffer.seek(0)
+
+    # --------------------------------------
+    # ADD QR TO PDF
+    # --------------------------------------
+
+    pdf.drawImage(
+        ImageReader(qr_buffer),
+        width - 220,
+        height - 430,
+        width=150,
+        height=150,
+        preserveAspectRatio=True,
+        mask="auto"
+    )
+
+    pdf.setFont(
+        "Helvetica-Bold",
+        11
+    )
+
+    pdf.drawCentredString(
+        width - 145,
+        height - 450,
+        "Scan Ticket"
+    )
+
+    # --------------------------------------
+    # FOOTER
+    # --------------------------------------
+
+    pdf.setFont(
+        "Helvetica",
+        10
+    )
 
     pdf.drawCentredString(
         width / 2,
         50,
         "Please present this ticket at the event entrance."
     )
+
+    # --------------------------------------
+    # SAVE PDF
+    # --------------------------------------
 
     pdf.save()
 

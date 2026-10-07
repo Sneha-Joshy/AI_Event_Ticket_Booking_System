@@ -86,6 +86,12 @@ Digital Ticket
                         </p>
 
                     </div>
+                    <p>
+    🎟️ <strong>Seat Number:</strong>
+    {% for seat in booking.seats.all %}
+        {{ seat.seat_number }}{% if not forloop.last %}, {% endif %}
+    {% endfor %}
+</p>
 
                 </div>
 
@@ -145,16 +151,13 @@ Digital Ticket
 </p>
 
 <strong>
-    Booking #{{ booking.id }}
+    Booking Id #{{ booking.id }}
 </strong>
+    <p>
+                Please present this ticket at the event entrance.
+            </p>
 
-                <p>
-                    Booking ID
-                </p>
-
-                <strong>
-                    #{{ booking.id }}
-                </strong>
+                
 
             </div>
 
