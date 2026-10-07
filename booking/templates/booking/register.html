@@ -34,6 +34,7 @@ Register
 
                 <select
                     name="user_type"
+                    id="user_type"
                     class="form-control"
                     required>
 
@@ -71,40 +72,41 @@ Register
 
             </div>
 
+
             <!-- FIRST NAME -->
 
-<div class="mb-3">
+            <div class="mb-3">
 
-    <label>
-        First Name
-    </label>
+                <label>
+                    First Name
+                </label>
 
-    <input
-        type="text"
-        name="first_name"
-        class="form-control"
-        placeholder="Enter first name"
-        required>
+                <input
+                    type="text"
+                    name="first_name"
+                    class="form-control"
+                    placeholder="Enter first name"
+                    required>
 
-</div>
+            </div>
 
 
-<!-- LAST NAME -->
+            <!-- LAST NAME -->
 
-<div class="mb-3">
+            <div class="mb-3">
 
-    <label>
-        Last Name
-    </label>
+                <label>
+                    Last Name
+                </label>
 
-    <input
-        type="text"
-        name="last_name"
-        class="form-control"
-        placeholder="Enter last name"
-        required>
+                <input
+                    type="text"
+                    name="last_name"
+                    class="form-control"
+                    placeholder="Enter last name"
+                    required>
 
-</div>
+            </div>
 
 
             <!-- EMAIL -->
@@ -121,6 +123,60 @@ Register
                     class="form-control"
                     placeholder="Enter email"
                     required>
+
+            </div>
+
+
+            <!-- ORGANIZER DETAILS -->
+
+            <div id="organizerFields" style="display: none;">
+
+                <div class="mb-3">
+
+                    <label>
+                        Organization Name
+                    </label>
+
+                    <input
+                        type="text"
+                        name="organization_name"
+                        id="organization_name"
+                        class="form-control"
+                        placeholder="Enter organization name">
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label>
+                        Phone Number
+                    </label>
+
+                    <input
+                        type="text"
+                        name="phone_number"
+                        id="phone_number"
+                        class="form-control"
+                        placeholder="Enter 10-digit mobile number">
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label>
+                        Address
+                    </label>
+
+                    <textarea
+                        name="address"
+                        id="address"
+                        class="form-control"
+                        rows="3"
+                        placeholder="Enter organization address"></textarea>
+
+                </div>
 
             </div>
 
@@ -211,10 +267,57 @@ Register
 
 <script>
 
+// Show organizer fields when Organizer is selected
+
+document.getElementById("user_type").addEventListener("change", function() {
+
+    let organizerFields =
+        document.getElementById("organizerFields");
+
+    let organizationName =
+        document.getElementById("organization_name");
+
+    let phoneNumber =
+        document.getElementById("phone_number");
+
+    let address =
+        document.getElementById("address");
+
+
+    if (this.value === "organizer") {
+
+        organizerFields.style.display = "block";
+
+        organizationName.required = true;
+        phoneNumber.required = true;
+        address.required = true;
+
+    } else {
+
+        organizerFields.style.display = "none";
+
+        organizationName.required = false;
+        phoneNumber.required = false;
+        address.required = false;
+
+        organizationName.value = "";
+        phoneNumber.value = "";
+        address.value = "";
+    }
+
+});
+
+
+// Show password
+
 document.getElementById("showPassword").addEventListener("change", function() {
 
-    let password = document.getElementById("password");
-    let confirmPassword = document.getElementById("confirm_password");
+    let password =
+        document.getElementById("password");
+
+    let confirmPassword =
+        document.getElementById("confirm_password");
+
 
     if (this.checked) {
 
