@@ -19,6 +19,7 @@
 
         </div>
 
+
         <!-- Event Details -->
         <div class="col-md-6">
 
@@ -26,45 +27,122 @@
 
             <hr>
 
-            <p><strong>Date:</strong> {{ event.date }}</p>
+            <p>
+                <strong>Date:</strong>
+                {{ event.date|date:"d M Y" }}
+            </p>
 
-            <p><strong>Time:</strong> {{ event.time }}</p>
+            <p>
+                <strong>Time:</strong>
+                {{ event.time|time:"h:i A" }}
+            </p>
 
-            <p><strong>Venue:</strong> {{ event.venue }}</p>
+            <p>
+                <strong>Venue:</strong>
+                {{ event.venue }}
+            </p>
 
-            <p><strong>Category:</strong> {{ event.category }}</p>
+            <p>
+                <strong>Category:</strong>
+                {{ event.category }}
+            </p>
 
-            <p><strong>Ticket Price:</strong> ₹{{ event.ticket_price }}</p>
+            <p>
+                <strong>Ticket Price:</strong>
+                ₹{{ event.ticket_price }}
+            </p>
 
-            <p><strong>Available Seats:</strong> {{ event.available_seats }}</p>
+            <p>
+                <strong>Available Seats:</strong>
+                {{ event.available_seats }}
+            </p>
 
-            <p>{{ event.description }}</p>
+            <!-- Booking Deadline -->
+            {% if event.booking_deadline %}
 
-            <a href="{% url 'events' %}" class="btn btn-secondary">
+                <div class="alert alert-warning mt-3">
+
+                    ⏳
+                    <strong>Booking closes at:</strong>
+                    <br>
+
+                    {{ event.booking_deadline|date:"d M Y, h:i A" }}
+
+                    <br>
+
+                    <small>
+                        Ticket booking closes 1 hour before the event.
+                    </small>
+
+                </div>
+
+            {% endif %}
+
+
+            <!-- Description -->
+            <p>
+                {{ event.description }}
+            </p>
+
+
+            <!-- Back Button -->
+            <a href="{% url 'events' %}"
+               class="btn btn-secondary">
                 ← Back
             </a>
 
-            
-            
-            {% if user.is_authenticated %}
 
-    <a href="{% url 'booking' event.id %}"
-       class="btn btn-primary">
-        🎟️ Book Ticket
-    </a>
+            <!-- Booking Section -->
 
-{% else %}
+            {% if event.booking_deadline and now > event.booking_deadline %}
 
-    <div class="alert alert-info mt-3">
-        🔐 Please log in to book tickets for this event.
-    </div>
+                <!-- Booking Closed -->
 
-    <a href="{% url 'login' %}?next={% url 'booking' event.id %}"
-       class="btn btn-primary">
-        🔑 Login to Book
-    </a>
+                <div class="alert alert-danger mt-3">
 
-{% endif %}
+                    🔒
+                    <strong>Booking Closed</strong>
+
+                    <br>
+
+                    Ticket booking for this event has closed.
+
+                </div>
+
+            {% else %}
+
+                {% if user.is_authenticated %}
+
+                    <!-- Book Ticket -->
+
+                    <a href="{% url 'booking' event.id %}"
+                       class="btn btn-primary mt-3">
+
+                        🎟️ Book Ticket
+
+                    </a>
+
+                {% else %}
+
+                    <!-- Login Required -->
+
+                    <div class="alert alert-info mt-3">
+
+                        🔐 Please log in to book tickets
+                        for this event.
+
+                    </div>
+
+                    <a href="{% url 'login' %}?next={% url 'booking' event.id %}"
+                       class="btn btn-primary">
+
+                        🔑 Login to Book
+
+                    </a>
+
+                {% endif %}
+
+            {% endif %}
 
         </div>
 

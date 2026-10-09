@@ -13,7 +13,7 @@ from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 
 
-
+from datetime import datetime, timedelta
 
 
 
@@ -169,12 +169,25 @@ def booking(request, id):
             "seats": seats
         }
     )
-def event_details(request, id):
-    event = get_object_or_404(Event, id=id)
-    return render(request, "booking/event_details.html", {
-        "event": event
-    })
 from django.utils import timezone
+
+
+def event_details(request, id):
+
+    event = get_object_or_404(
+        Event,
+        id=id,
+        status="Approved"
+    )
+
+    return render(
+        request,
+        "booking/event_details.html",
+        {
+            "event": event,
+            "now": timezone.now()
+        }
+    )
 
 def index(request):
 
@@ -914,36 +927,69 @@ def organizer_dashboard(request):
         }
     )
 
+from datetime import datetime, timedelta
+from django.utils import timezone
+
+
 def add_event(request):
 
+    # Only organizers can add events
     if not Organizer.objects.filter(user=request.user).exists():
-        messages.error(request, "Please login as an organizer.")
+        messages.error(
+            request,
+            "Please login as an organizer."
+        )
         return redirect("organizer_login")
 
-    organizer = Organizer.objects.get(user=request.user)
+    organizer = Organizer.objects.get(
+        user=request.user
+    )
 
     if request.method == "POST":
 
         event_name = request.POST.get("event_name")
         category = request.POST.get("category")
         description = request.POST.get("description")
+
         date = request.POST.get("date")
         time = request.POST.get("time")
 
-        booking_deadline = request.POST.get("booking_deadline")
         event_type = request.POST.get("event_type")
 
         venue = request.POST.get("venue")
         contact_number = request.POST.get("contact_number")
 
         ticket_price = request.POST.get("ticket_price")
-        total_seats = int(request.POST.get("total_seats"))
+        total_seats = int(
+            request.POST.get("total_seats")
+        )
 
         image = request.FILES.get("image")
 
         terms = request.POST.get("terms")
 
+        # -------------------------------------------------
+        # Calculate booking deadline automatically
+        # 1 hour before the event
+        # -------------------------------------------------
+
+        event_datetime = datetime.strptime(
+            f"{date} {time}",
+            "%Y-%m-%d %H:%M"
+        )
+
+        event_datetime = timezone.make_aware(
+            event_datetime
+        )
+
+        booking_deadline = (
+            event_datetime - timedelta(hours=1)
+        )
+
+        # -------------------------------------------------
         # Create the event
+        # -------------------------------------------------
+
         event = Event.objects.create(
 
             organizer=organizer,
@@ -955,7 +1001,9 @@ def add_event(request):
             date=date,
             time=time,
 
+            # Automatically calculated
             booking_deadline=booking_deadline,
+
             event_type=event_type,
 
             venue=venue,
@@ -970,10 +1018,14 @@ def add_event(request):
 
             terms=terms,
 
+            # Event needs admin approval
             status="Pending"
         )
 
-        # Create individual seats for the event
+        # -------------------------------------------------
+        # Create individual seats
+        # -------------------------------------------------
+
         for i in range(total_seats):
 
             row = chr(65 + (i // 100))
@@ -989,14 +1041,14 @@ def add_event(request):
             "Event submitted successfully. Waiting for admin approval."
         )
 
-        return redirect("organizer_dashboard")
+        return redirect(
+            "organizer_dashboard"
+        )
 
     return render(
         request,
         "booking/add_event.html"
-    ) 
-
-
+    )
 @login_required
 def my_events(request):
 
@@ -2044,54 +2096,237 @@ def resolve_enquiry(request, id):
 @login_required
 def recommendations(request):
 
-    # Get the customer's previous bookings using their email
+    # -------------------------------------------------
+    # GET CUSTOMER'S PREVIOUS BOOKINGS
+    # -------------------------------------------------
+
     previous_bookings = Booking.objects.filter(
-        customer_email=request.user.email
+        customer_email=request.user.email,
+        status="Confirmed"
     ).select_related("event")
 
-    # Get categories from previously booked events
-    preferred_categories = set(
-        booking.event.category
-        for booking in previous_bookings
+    preferred_categories = list(
+        set(
+            booking.event.category
+            for booking in previous_bookings
+        )
     )
 
-    # Get approved future events
-    recommended_events = Event.objects.filter(
+    # -------------------------------------------------
+    # GET UPCOMING APPROVED EVENTS
+    # -------------------------------------------------
+
+    today = timezone.localdate()
+
+    available_events = Event.objects.filter(
         status="Approved",
-        available_seats__gt=0
+        available_seats__gt=0,
+        date__gte=today
     ).order_by("date", "time")
 
-    # If the customer has previous bookings,
-    # show events from their preferred categories first
+    # -------------------------------------------------
+    # IF NO EVENTS
+    # -------------------------------------------------
+
+    if not available_events.exists():
+
+        return render(
+            request,
+            "booking/recommendations.html",
+            {
+                "recommended_events": [],
+                "preferred_categories": preferred_categories,
+                "ai_reason": "No upcoming events are currently available."
+            }
+        )
+
+    # -------------------------------------------------
+    # PREPARE EVENT INFORMATION FOR AI
+    # -------------------------------------------------
+
+    event_data = []
+
+    for event in available_events:
+
+        event_data.append(
+            f"""
+ID: {event.id}
+Event Name: {event.event_name}
+Category: {event.category}
+Description: {event.description}
+Date: {event.date}
+Venue: {event.venue}
+Ticket Price: ₹{event.ticket_price}
+Available Seats: {event.available_seats}
+"""
+        )
+
+    events_information = "\n".join(event_data)
+
+    # -------------------------------------------------
+    # CUSTOMER INTEREST INFORMATION
+    # -------------------------------------------------
+
     if preferred_categories:
 
-        matching_events = recommended_events.filter(
-            category__in=preferred_categories
+        interests = ", ".join(
+            preferred_categories
         )
 
-        other_events = recommended_events.exclude(
-            category__in=preferred_categories
+        customer_information = (
+            f"The customer previously booked events "
+            f"from these categories: {interests}."
         )
-
-        recommended_events = list(matching_events) + list(other_events)
 
     else:
-        # New users get upcoming events
-        recommended_events = list(recommended_events)
 
-    # Show only the first 6 recommendations
-    recommended_events = recommended_events[:6]
+        customer_information = (
+            "The customer is a new user and has "
+            "no previous booking history."
+        )
+
+    # -------------------------------------------------
+    # AI RECOMMENDATION PROMPT
+    # -------------------------------------------------
+
+    prompt = f"""
+You are an AI event recommendation system.
+
+{customer_information}
+
+Below is the list of currently available upcoming events:
+
+{events_information}
+
+Recommend the most relevant events for this customer.
+
+Rules:
+
+1. Recommend only events from the provided list.
+2. Do not create or invent event IDs.
+3. Consider the customer's previous interests when available.
+4. Consider event category and description.
+5. For a new customer, recommend a suitable variety of upcoming events.
+6. Recommend a maximum of 6 events.
+7. Return ONLY the event IDs separated by commas.
+8. Do not include event names or explanations.
+
+Example:
+3,7,2,9
+"""
+
+    # -------------------------------------------------
+    # CALL GEMINI
+    # -------------------------------------------------
+
+    try:
+
+        response = client.models.generate_content(
+            model="gemini-3.5-flash-lite",
+            contents=prompt
+        )
+
+        ai_result = response.text.strip()
+
+        # -------------------------------------------------
+        # EXTRACT EVENT IDs
+        # -------------------------------------------------
+
+        recommended_ids = []
+
+        for value in ai_result.split(","):
+
+            value = value.strip()
+
+            if value.isdigit():
+
+                recommended_ids.append(
+                    int(value)
+                )
+
+        # Remove duplicates
+        recommended_ids = list(
+            dict.fromkeys(recommended_ids)
+        )[:6]
+
+        # -------------------------------------------------
+        # GET RECOMMENDED EVENTS FROM DATABASE
+        # -------------------------------------------------
+
+        events_dict = {
+            event.id: event
+            for event in available_events
+        }
+
+        recommended_events = [
+            events_dict[event_id]
+            for event_id in recommended_ids
+            if event_id in events_dict
+        ]
+
+        # -------------------------------------------------
+        # FALLBACK
+        # -------------------------------------------------
+
+        if not recommended_events:
+
+            recommended_events = list(
+                available_events[:6]
+            )
+
+            ai_reason = (
+                "Showing upcoming events based on availability."
+            )
+
+        else:
+
+            if preferred_categories:
+
+                ai_reason = (
+                    "AI recommendations are based on "
+                    "your previous event interests."
+                )
+
+            else:
+
+                ai_reason = (
+                    "AI selected these events from "
+                    "currently available upcoming events."
+                )
+
+    except Exception as e:
+
+        print(
+            "RECOMMENDATION AI ERROR:",
+            repr(e)
+        )
+
+        # -------------------------------------------------
+        # FALLBACK IF AI FAILS
+        # -------------------------------------------------
+
+        recommended_events = list(
+            available_events[:6]
+        )
+
+        ai_reason = (
+            "Showing upcoming events based on "
+            "availability."
+        )
+
+    # -------------------------------------------------
+    # DISPLAY RECOMMENDATIONS
+    # -------------------------------------------------
 
     return render(
         request,
         "booking/recommendations.html",
         {
             "recommended_events": recommended_events,
-            "preferred_categories": preferred_categories
+            "preferred_categories": preferred_categories,
+            "ai_reason": ai_reason
         }
     )
-
-
 @login_required
 def notifications(request):
 
